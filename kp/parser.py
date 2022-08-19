@@ -3,6 +3,7 @@ from typing import (Callable,Dict,Optional,List)
 
 from kp.ast import (
     Program,
+    Integer,
     Identifier,
     Expression,
     Statement,
@@ -107,6 +108,19 @@ class Parser:
         return Identifier(token=self._current_token,
                         value=self._current_token.literal)
 
+    def _parse_integer(self)-> Optional[Integer]:
+        assert self._current_token is not None
+        integer = Integer(token=self._current_token)
+
+        try:
+            integer.value = int(self._current_token.literal)
+        except ValueError:
+            message = f'No se ha podido parsear {self._current_token.literal} como entero'
+            self._errors.append(message)
+            return None
+
+        return integer
+
     def _parse_let_statement(self)-> Optional[LetStatement]:
         assert self._current_token is not None
         let_statement = LetStatement(token=self._current_token)
@@ -152,4 +166,5 @@ class Parser:
     def _register_prefix_fns(self) -> PrefixParseFns:
         return {
             TokenType.IDENT : self._parse_identifier,
+            TokenType.INT: self._parse_integer,
         }

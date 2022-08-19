@@ -7,6 +7,7 @@ from kp.token import(
 )
 from kp.ast import (
     Program,
+    Integer,
     Identifier,
     Expression,
     LetStatement,

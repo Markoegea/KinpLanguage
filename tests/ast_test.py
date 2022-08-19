@@ -6,6 +6,7 @@ from kp.token import(
 )
 from kp.ast import (
     Program,
+    Integer,
     Identifier,
     Expression,
     LetStatement,
@@ -14,7 +15,6 @@ from kp.ast import (
 class ASTTest(TestCase):
     def test_let_statement(self) -> None:
         #Example: variable edad = 17;
-        #TODO: Si se agrega una expresion de numeros, modificar aqui
         program: Program = Program(statements=[
             LetStatement(
                 token=Token(TokenType.LET, literal='variable'),
@@ -22,9 +22,9 @@ class ASTTest(TestCase):
                     token=Token(TokenType.IDENT, literal='edad'),
                     value='edad'
                 ),
-                value=Identifier(
+                value=Integer(
                     token=Token(TokenType.INT, literal='17'),
-                    value = '17'
+                    value = 17
                 ),
             )
         ])
