@@ -6,6 +6,7 @@ from kp.token import(
     TokenType,
 )
 from kp.ast import (
+    Prefix,
     Program,
     Integer,
     Identifier,
@@ -115,11 +116,29 @@ class ParserTest(TestCase):
         assert expression_statement.expression is not None
         self._test_literal_expression(expression_statement.expression,5)
 
+    def _test_prefix_expression(self)-> None:
+        source: str = '!5; -15;'
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser,program,expected_statements_count=2)
+
+        # for statement,(expected_operator, expected_value) in zip(program.statements,[('!',5),('-',15)]):
+        #     statement = cast(ExpressionStatement,statement)
+        #     self.assertIsInstance(statement.expression, Prefix)
+        #     prefix = cast(Prefix,statement.expression)
+        #     self.assertEquals(prefix.operator, expected_operator)
+        #     assert prefix.right is not None
+        #     self._test_literal_expression(prefix.right,expected_value)
 
     def _test_program_statements(self,
                                     parser: Parser,
                                     program: Program,
                                     expected_statements_count: int = 1) -> None:
+        if parser.errors:
+            print(parser.errors)
+            
         self.assertEquals(len(parser.errors),0)
         self.assertEquals(len(program.statements), expected_statements_count)
         self.assertIsInstance(program.statements[0], ExpressionStatement)

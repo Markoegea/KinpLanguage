@@ -10,7 +10,8 @@ from kp.ast import (
     Identifier,
     Expression,
     LetStatement,
-    ReturnStatement)
+    ReturnStatement,
+    ExpressionStatement)
 
 class ASTTest(TestCase):
     def test_let_statement(self) -> None:
@@ -47,3 +48,26 @@ class ASTTest(TestCase):
         program_str = str(program)
 
         self.assertEquals(program_str, 'regresa edad;')
+
+    def test_expression_statement(self) -> None:
+
+        program: Program = Program(statements=[
+            ExpressionStatement(
+
+                token=Token(TokenType.IDENT, literal="foobar"),
+
+                expression=Identifier(
+                    token=Token(TokenType.IDENT, literal="foobar"),
+                    value="foobar"
+                )
+            ),
+            ExpressionStatement(
+                token=Token(TokenType.INT, literal="5"),
+                expression=Integer(
+                    token=Token(TokenType.INT, literal="5"),
+                    value=5
+                )
+            )
+        ])
+        program_str = str(program)
+        self.assertEquals(program_str, "foobar5") 
