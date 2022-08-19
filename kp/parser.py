@@ -2,6 +2,7 @@ from enum import IntEnum
 from typing import (Callable,Dict,Optional,List)
 
 from kp.ast import (
+    Prefix,
     Program,
     Integer,
     Identifier,
@@ -84,6 +85,8 @@ class Parser:
         try:
             prefix_parse_fn = self._prefix_parse_fns[self._current_token.token_type]
         except KeyError:
+            message = f'No se encontro ninguna funcion para parsear {self._current_token.literal}'
+            self._errors.append(message)
             return None
         
         left_expression = prefix_parse_fn()
@@ -120,6 +123,14 @@ class Parser:
             return None
 
         return integer
+    
+    def _parse_prefix_expresion(self)->Prefix:
+        assert self._current_token is not None
+        prefix_expression = Prefix(token=self._current_token,operator=self._current_token.literal)
+        self._advance_tokens()
+        prefix_expression.right =   self._parse_expresion(Precedence.PREFIX)
+        
+        return prefix_expression
 
     def _parse_let_statement(self)-> Optional[LetStatement]:
         assert self._current_token is not None
@@ -167,4 +178,6 @@ class Parser:
         return {
             TokenType.IDENT : self._parse_identifier,
             TokenType.INT: self._parse_integer,
+            TokenType.LESS: self._parse_prefix_expresion,
+            TokenType.NEGATION: self._parse_prefix_expresion,
         }
