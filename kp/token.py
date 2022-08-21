@@ -1,6 +1,7 @@
 from enum import (auto,Enum,unique)
 from typing import (Dict,NamedTuple)
 
+#Enum donde se colocan todos los nombres de los token que pueden haber en el lenguaje
 @unique
 class TokenType(Enum):
     ASSIGN = auto(),
@@ -31,6 +32,7 @@ class TokenType(Enum):
     SEMICOLON = auto(),
     TRUE = auto(),
 
+#Una clase donde se crean los token, que tiene como parametros el nombre del token(enum) y el valor de ese token
 class Token(NamedTuple):
     token_type : TokenType
     literal: str
@@ -38,7 +40,7 @@ class Token(NamedTuple):
     def __str__(self) -> str:
         return f'Type: {self.token_type}, Literal: {self.literal}'
 
-
+#Funcion que contiene las palabras reservadas del lenguaje, si el dado caso no es ninguna es un dato identificador
 def lookup_token_type(literal:str) -> TokenType:
     keywords: Dict[str, TokenType] = {
         'falso': TokenType.FALSE,

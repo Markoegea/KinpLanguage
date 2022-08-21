@@ -135,6 +135,39 @@ class ParserTest(TestCase):
             assert prefix.right is not None
             self._test_literal_expression(prefix.right,expected_value)
 
+    def test_infix_expressions(self)-> None:
+        source: str = '''
+        5 + 5;
+        5 - 5;
+        5 * 5;
+        5 / 5;
+        5 > 5;
+        5 < 5;
+        5 == 5;
+        5 != 5;
+        '''
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser,program,expected_statements_count=8)
+
+        expected_operators_and_values: List[Tuple[Any,str,Any]] = [
+            (5,'+',5),
+            (5,'-',5),
+            (5,'*',5),
+            (5,'/',5),
+            (5,'>',5),
+            (5,'<',5),
+            (5,'==',5),
+            (5,'!=',5),
+        ]
+        for statement, (expected_left, expected_operator, expected_right) in 
+                zip(program.statements,expected_operators_and_values)
+            #TODO: Desde 4:41 video Infix operators y orden de las operaciones: testing
+
+
+#######################AUXILIAR FUNCTIONS###########################################
     def _test_program_statements(self,
                                     parser: Parser,
                                     program: Program,
