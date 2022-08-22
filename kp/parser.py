@@ -90,6 +90,7 @@ class Parser:
         self._current_token = self._peek_token
         self._peek_token = self._lexer.next_token()
 
+    #Funcion para obtener la precedencia del token actual
     def _current_precedence(self) -> Precedence:
         assert self._current_token is not None
         try:
@@ -98,19 +99,19 @@ class Parser:
             return Precedence.LOWEST
 
     #Funcion para comprobar si el token que sigue es el correcto
-    def _expected_token(self, token_type: TokenType) -> bool:
+    def _expected_token(self, token: Token) -> bool:
         assert self._peek_token is not None
-        if self._peek_token.token_type == token_type:
+        if self._peek_token.token_type == token.token_type:
             self._advance_tokens()
             return True
-        self._expected_token_error(token_type)
+        self._expected_token_error(token)
         return False
     
     #De ser el token siguente incorrecto, se agrega a la lista de errores
-    def _expected_token_error(self, token_type:TokenType)->None:
+    def _expected_token_error(self, token:Token)->None:
         assert self._peek_token is not None
-        error = f'Se esperaba que el siguente token fuera {token_type} ' + \
-                f'Pero se obtuvo {self._peek_token.token_type}'
+        error = f'Se esperaba un "{token.literal}" ' + \
+                f'Pero se obtuvo un "{self._peek_token.literal}"'
         self._errors.append(error)
 
     #Con esta funcion, devolvemos una expresion dependiendo de con cual token nos encontremos
@@ -121,13 +122,12 @@ class Parser:
             prefix_parse_fn = self._prefix_parse_fns[self._current_token.token_type]
         except KeyError:
             #Si no encuentra ninguna coincidencia, significa que hubo un error y emite un error
-            message = f'No se encontro ninguna funcion para parsear {self._current_token.literal}'
+            message = f'No se encontro ninguna funcion para parsear "{self._current_token.literal}"'
             self._errors.append(message)
             return None
         #Si todo sale bien, ejecuta la funcion correspondiente a la expresion encontrada
         left_expression = prefix_parse_fn()
         assert self._peek_token is not None
-        #TODO: Entender como funciona bien, este ciclo
         while not self._peek_token.token_type == TokenType.SEMICOLON and precedence < self._peek_precedence():
             try:
                 infix_parse_fn = self._infix_parse_fns[self._peek_token.token_type]
@@ -153,6 +153,14 @@ class Parser:
 
         return expression_statement
 
+    def _parse_grouped_expression(self) -> Optional[Expression]:
+        self._advance_tokens()
+        expression = self._parse_expresion(Precedence.LOWEST)
+        if not self._expected_token(Token(TokenType.RPAREN,')')):
+            return None
+        return expression
+
+    #Parsea el token actual como un tipo Boolean
     def _parse_boolean(self) -> Boolean:
         assert self._current_token is not None
         return Boolean(token= self._current_token,
@@ -179,6 +187,8 @@ class Parser:
 
         return integer
 
+    #Parsea el token actual como un tipo Infix, pero como este mismo tiene un lado derecho y uno izquierdo
+    #Llama a la funcion self._parse_expresion, para traer esa expresion
     def _parse_infix_expression(self, left: Expression) -> Infix:
         assert self._current_token is not None
         infix = Infix(token=self._current_token,
@@ -191,7 +201,6 @@ class Parser:
         infix.right = self._parse_expresion(precedence=precedence)
 
         return infix
-
 
     #Parsea el token actual como un tipo Prefix
     def _parse_prefix_expresion(self)->Prefix:
@@ -210,13 +219,13 @@ class Parser:
         #Inicializamos un instancia LetStatement, con el token actual
         let_statement = LetStatement(token=self._current_token)
 
-        if not self._expected_token(TokenType.IDENT):
+        if not self._expected_token(Token(TokenType.IDENT,'nombre')):
             return None
 
         #la variable name del LetStatement, es un identifier que retorna de otra funcion
         let_statement.name = self._parse_identifier()
 
-        if not self._expected_token(TokenType.ASSIGN):
+        if not self._expected_token(Token(TokenType.ASSIGN,'=')):
             return None
 
         #TODO terminar cuando sepamos parsear expresiones
@@ -252,6 +261,7 @@ class Parser:
             else:
                 return self._parse_expression_statements()
     
+    #Funcion para obtener la precedencia del peek token
     def _peek_precedence(self)->Precedence:
         assert self._peek_token is not None
         try:
@@ -278,6 +288,7 @@ class Parser:
             TokenType.FALSE: self._parse_boolean,
             TokenType.IDENT : self._parse_identifier,
             TokenType.INT: self._parse_integer,
+            TokenType.LPAREN: self._parse_grouped_expression,
             TokenType.LESS: self._parse_prefix_expresion,
             TokenType.NEGATION: self._parse_prefix_expresion,
             TokenType.TRUE: self._parse_boolean,
