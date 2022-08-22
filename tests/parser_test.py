@@ -1,12 +1,14 @@
 from unittest import TestCase
-from typing import (List,cast,Any,Type)
+from typing import (List,cast,Any,Type,Tuple)
 
 from kp.token import(
     Token,
     TokenType,
 )
 from kp.ast import (
+    Infix,
     Prefix,
+    Boolean,
     Program,
     Integer,
     Identifier,
@@ -151,7 +153,7 @@ class ParserTest(TestCase):
         program: Program = parser.parse_program()
 
         self._test_program_statements(parser,program,expected_statements_count=8)
-
+        print(str(program))
         expected_operators_and_values: List[Tuple[Any,str,Any]] = [
             (5,'+',5),
             (5,'-',5),
@@ -162,12 +164,46 @@ class ParserTest(TestCase):
             (5,'==',5),
             (5,'!=',5),
         ]
-        for statement, (expected_left, expected_operator, expected_right) in 
-                zip(program.statements,expected_operators_and_values)
-            #TODO: Desde 4:41 video Infix operators y orden de las operaciones: testing
+        for statement, (expected_left, expected_operator, expected_right) in zip(program.statements,expected_operators_and_values):
+            statement = cast(ExpressionStatement, statement)
+            assert statement.expression is not None
+            self.assertIsInstance(statement.expression, Infix)
+            self._test_infix_expression(statement.expression,expected_left,expected_operator,expected_right)
+
+    def test_boolean_expression(self)->None:
+        source: str = '''
+        verdadero; falso;
+        '''
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser,program,expected_statements_count=2)
+
+        expected_values: List[bool] = [True, False]
+
+        for statement,expected_value in zip(program.statements,expected_values):
+            expression_statement = cast(ExpressionStatement,statement)
+            assert expression_statement.expression is not None
+            self._test_literal_expression(expression_statement.expression,expected_value)
+        
+
 
 
 #######################AUXILIAR FUNCTIONS###########################################
+    def _test_infix_expression(self, expression: Expression,
+                                expected_left: Any,
+                                expected_operator:str,
+                                expected_right: Any):
+        infix = cast(Infix,expression)
+        assert infix.left is not None
+        self._test_literal_expression(infix.left, expected_left)
+
+        self.assertEquals(infix.operator,expected_operator)
+
+        assert infix.right is not None
+        self._test_literal_expression(infix.right, expected_right)
+
     def _test_program_statements(self,
                                     parser: Parser,
                                     program: Program,
@@ -188,8 +224,20 @@ class ParserTest(TestCase):
             self._test_identifier(expression,expected_value)
         elif value_type == int:
             self._test_integer(expression,expected_value)
+        elif value_type == bool:
+            self._test_boolean(expression,expected_value)
         else:
             self.fail(f'Unhandled type of expression. Got={value_type}')
+
+    def _test_boolean(self,
+                        expression: Expression,
+                        expected_value:bool)-> None:
+        self.assertIsInstance(expression, Boolean)
+
+        boolean = cast(Boolean, expression)
+        
+        self.assertEquals(boolean.value, expected_value)
+        self.assertEquals(boolean.token.literal, 'verdadero' if expected_value else 'falso') 
 
     def _test_identifier(self,
                         expression: Expression,

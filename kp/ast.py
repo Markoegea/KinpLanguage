@@ -49,6 +49,17 @@ class Program(ASTNode):
             out.append(str(statement))
         return ''.join(out)
 
+#Clase Boolean que hereda de Expression, recibe como parametros un token y su valor, que debe ser un booleano
+class Boolean(Expression):
+    def __init__(self,
+                token: Token,
+                value: Optional[bool] = None) -> None:
+        super().__init__(token)
+        self.value = value
+    
+    def __str__(self) -> str:
+        return self.token_literal()
+
 #Clase Identifier que hereda de Expression, recibe como parametros un token y su valor
 class Identifier(Expression):
     def __init__(self,
@@ -83,6 +94,20 @@ class Prefix(Expression):
     
     def __str__(self)->str:
         return f'({self.operator}{str(self.right)})'
+
+class Infix(Expression):
+    def __init__(self,
+                token: Token,
+                left: Expression,
+                operator: str,
+                right: Optional[Expression]=None)->None:
+        super().__init__(token)
+        self.left = left
+        self.operator = operator
+        self.right = right
+    
+    def __str__(self) -> str:
+        return f'({str(self.left)} {self.operator} {str(self.right)})'
 
 #Clase LetStatement que hereda de Statement, 
 #recibe como parametros un token, un identificador como nombre y Expresion como valor
