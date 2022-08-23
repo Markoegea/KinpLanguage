@@ -6,6 +6,8 @@ from kp.token import(
     TokenType,
 )
 from kp.ast import (
+    If,
+    Block,
     Infix,
     Prefix,
     Boolean,
@@ -208,6 +210,73 @@ class ParserTest(TestCase):
             program: Program = parser.parse_program()
             self._test_program_statements(parser,program,expected_statements_count)
             self.assertEquals(str(program),expected_result)
+
+    def test_if_expression(self) -> None:
+            source: str = 'si (x < y) { z }'
+            lexer: Lexer = Lexer(source) 
+            parser: Parser = Parser(lexer)
+            program: Program = parser.parse_program()
+            self._test_program_statements(parser,program)
+
+            #Test correct node type
+            if_expresion = cast(If, cast(ExpressionStatement, program.statements[0]).expression)
+            self.assertIsInstance(if_expresion, If)
+
+            #Test condition
+            assert if_expresion.condition is not None
+            self._test_infix_expression(if_expresion.condition, 'x','<', 'y')
+
+            #Test consecuence
+            assert if_expresion.consecuence is not None
+            self.assertIsInstance(if_expresion.consecuence, Block)
+            self.assertEquals(len(if_expresion.consecuence.statements),1)
+            
+            consecuence_statement = cast(ExpressionStatement, if_expresion.consecuence.statements[0])
+            assert consecuence_statement.expression is not None
+            self._test_identifier(consecuence_statement.expression, 'z')
+
+            #Test alternative
+            self.assertIsNone(if_expresion.alternative)
+
+    def test_if_else_expression(self) -> None:
+            source: str = '''
+            si (x == 5) { 
+                regresa verdadero; 
+            } si_no {
+                z 
+            }
+            '''
+            lexer: Lexer = Lexer(source) 
+            parser: Parser = Parser(lexer)
+            program: Program = parser.parse_program()
+            #print(str(program))
+            self._test_program_statements(parser,program,1)
+            if_expresion = cast(If, cast(ExpressionStatement, program.statements[0]).expression)
+            self.assertIsInstance(if_expresion, If)
+
+            #Test condition
+            assert if_expresion.condition is not None
+            self._test_infix_expression(if_expresion.condition, 'x','==', 5)
+
+            #Test consecuence
+            assert if_expresion.consecuence is not None
+            self.assertIsInstance(if_expresion.consecuence, Block)
+            self.assertEquals(len(if_expresion.consecuence.statements),1)
+            
+            #TODO: Cuando sepa parsear expresiones
+            #consecuence_statement = cast(ReturnStatement, if_expresion.consecuence.statements[0])
+            #assert consecuence_statement.return_value is not None
+            #self._test_literal_expression(consecuence_statement.return_value, True)
+
+            #Test alternative
+            assert if_expresion.alternative is not None
+            self.assertIsInstance(if_expresion.alternative, Block)
+            self.assertEquals(len(if_expresion.alternative.statements),1)
+            
+            alternative_statement = cast(ExpressionStatement, if_expresion.alternative.statements[0])
+            assert alternative_statement.expression is not None
+            self._test_identifier(alternative_statement.expression, 'z')
+
 
 
 #######################AUXILIAR FUNCTIONS###########################################

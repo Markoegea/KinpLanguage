@@ -2,6 +2,8 @@ from enum import IntEnum
 from typing import (Callable,Dict,Optional,List)
 
 from kp.ast import (
+    If,
+    Block,
     Infix,
     Prefix,
     Boolean,
@@ -106,6 +108,14 @@ class Parser:
             return True
         self._expected_token_error(token)
         return False
+
+    #Funcion para comprobar si el token que ahi es el correcto
+    def _current_correct_token(self, token: Token) -> bool:
+        assert self._current_token is not None
+        if self._current_token.token_type == token.token_type:
+            return True
+        self._expected_token_error(token)
+        return False
     
     #De ser el token siguente incorrecto, se agrega a la lista de errores
     def _expected_token_error(self, token:Token)->None:
@@ -172,6 +182,46 @@ class Parser:
 
         return Identifier(token=self._current_token,
                         value=self._current_token.literal)
+
+    def _parse_block(self) -> Optional[Block]:
+        assert self._current_token is not None
+        block_statement = Block(token=self._current_token,
+                                statements =[])
+        self._advance_tokens()
+
+        while not self._current_token.token_type == TokenType.RBRACE \
+                    and not self._current_token.token_type == TokenType.EOF:
+            statement = self._parse_statement()
+
+            if statement:
+                block_statement.statements.append(statement)
+            self._advance_tokens()
+        return block_statement
+
+    def _parse_if(self) -> Optional[If]:
+        assert self._current_token is not None
+        if_expression = If(token=self._current_token)
+        if not self._expected_token(Token(TokenType.LPAREN,'(')):
+            return None
+        self._advance_tokens()
+        if_expression.condition = self._parse_expresion(Precedence.LOWEST)
+        if not self._expected_token(Token(TokenType.RPAREN,')')):
+            return None
+        if not self._expected_token(Token(TokenType.LBRACE,'{')):
+            return None
+        if_expression.consecuence = self._parse_block()
+        if not self._current_correct_token(Token(TokenType.RBRACE,'}')):
+            return None
+
+        assert self._peek_token is not None
+        if self._peek_token.token_type == TokenType.ELSE:
+            self._advance_tokens()
+            if not self._expected_token(Token(TokenType.LBRACE,'{')):
+                return None
+            if_expression.alternative = self._parse_block()
+            if not self._current_correct_token(Token(TokenType.RBRACE,'}')):
+                return None
+        return if_expression
 
     #Parsea el token actual como un tipo Integer
     def _parse_integer(self)-> Optional[Integer]:
@@ -287,6 +337,7 @@ class Parser:
         return {
             TokenType.FALSE: self._parse_boolean,
             TokenType.IDENT : self._parse_identifier,
+            TokenType.IF: self._parse_if,
             TokenType.INT: self._parse_integer,
             TokenType.LPAREN: self._parse_grouped_expression,
             TokenType.LESS: self._parse_prefix_expresion,

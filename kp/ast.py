@@ -109,6 +109,34 @@ class Infix(Expression):
     def __str__(self) -> str:
         return f'({str(self.left)} {self.operator} {str(self.right)})'
 
+class Block(Statement):
+    def __init__(self,
+                token:Token,
+                statements: List[Statement])->None:
+        super().__init__(token)
+        self.statements = statements
+
+    def __str__(self) -> str:
+        out: List[str] = [str(statement) for statement in self.statements]
+        return ''.join(out)
+
+class If(Expression):
+    def __init__(self,
+                token: Token,
+                condition: Optional[Expression]= None,
+                consecuence: Optional[Block] = None,
+                alternative: Optional[Block] = None) -> None:
+        super().__init__(token)
+        self.condition = condition
+        self.consecuence = consecuence
+        self.alternative = alternative
+    
+    def __str__(self) -> str:
+        out: str = f'si {str(self.condition)} {str(self.consecuence)}'
+        if self.alternative:
+            out += f'si_no {str(self.alternative)}'
+        return out
+
 #Clase LetStatement que hereda de Statement, 
 #recibe como parametros un token, un identificador como nombre y Expresion como valor
 #Esta guarda una declaracion de una variable, como pude ser, variable edad = 18;
