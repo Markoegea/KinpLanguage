@@ -137,6 +137,36 @@ class If(Expression):
             out += f'si_no {str(self.alternative)}'
         return out
 
+class Function(Expression):
+    def __init__(self,
+                token: Token,
+                parameters: List[Identifier] = [],
+                body: Optional[Block] = None) -> None:
+        super().__init__(token)
+        self.parameters = parameters
+        self.body = body
+
+    def __str__(self)-> str:
+        param_list: List[str] = [str(parameter) for parameter in self.parameters]
+        params: str = ', '.join(param_list)
+        return f'{self.token_literal()}({params}) {str(self.body)}'
+
+class Call(Expression):
+    def __init__(self,
+                token: Token,
+                function: Expression,
+                arguments: Optional[List[Expression]] = None) -> None:
+        super().__init__(token)
+        self.function = function
+        self.arguments = arguments
+
+    def __str__(self) -> str:
+        assert self.arguments is not None
+        arg_list: List[str] = [str(argument) for argument in self.arguments]
+        args: str = ', '.join(arg_list)
+        return f'{str(self.function)}({args})'
+
+
 #Clase LetStatement que hereda de Statement, 
 #recibe como parametros un token, un identificador como nombre y Expresion como valor
 #Esta guarda una declaracion de una variable, como pude ser, variable edad = 18;

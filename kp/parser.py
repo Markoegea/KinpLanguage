@@ -3,12 +3,14 @@ from typing import (Callable,Dict,Optional,List)
 
 from kp.ast import (
     If,
+    Call,
     Block,
     Infix,
     Prefix,
     Boolean,
     Program,
     Integer,
+    Function,
     Identifier,
     Expression,
     Statement,
@@ -49,6 +51,8 @@ PRECEDENCES: Dict[TokenType,Precedence] = {
     TokenType.LESS: Precedence.SUM,
     TokenType.DIVISION: Precedence.PRODUCT,
     TokenType.MULTIPLICATION: Precedence.PRODUCT,
+    TokenType.LPAREN: Precedence.CALL,
+
 }
 
 #Clase parser, que se encarga de parsear todos los token que manda el lexer
@@ -163,6 +167,71 @@ class Parser:
 
         return expression_statement
 
+    def _parse_call(self, function: Expression) -> Call:
+        assert self._current_token is not None
+        call = Call(self._current_token,function)
+        call.arguments = self._parse_call_arguments()
+        return call
+
+    def _parse_call_arguments(self) -> Optional[List[Expression]]:
+        arguments: List[Expression] = []
+
+        assert self._peek_token is not None
+        if self._peek_token.token_type == TokenType.RPAREN:
+            self._advance_tokens()
+            return arguments
+        self._advance_tokens()
+        if expression:= self._parse_expresion(Precedence.LOWEST):
+            arguments.append(expression)
+        
+        while self._peek_token.token_type == TokenType.COMMA:
+            self._advance_tokens()
+            self._advance_tokens()
+
+            if expression:= self._parse_expresion(Precedence.LOWEST):
+                arguments.append(expression)
+        if not self._expected_token(Token(TokenType.RPAREN,')')):
+            return None
+        return arguments
+
+
+    def _parse_function(self) -> Optional[Function]:
+        assert self._current_token is not None
+        function = Function(token=self._current_token)
+
+        if not self._expected_token(Token(TokenType.LPAREN,'(')):
+            return None
+
+        function.parameters = self._parse_function_parameters()
+
+        if not self._expected_token(Token(TokenType.LBRACE,'{')):
+            return None
+        
+        function.body = self._parse_block()
+
+        if not self._current_correct_token(Token(TokenType.RBRACE,'}')):
+            return None
+
+        return function
+
+    def _parse_function_parameters(self) -> List[Identifier]:
+        params: List[Identifier] = []
+        assert self._peek_token is not None
+        if self._peek_token.token_type == TokenType.RPAREN:
+            self._advance_tokens()
+            return params
+        self._advance_tokens()
+        identifier = self._parse_identifier()
+        params.append(identifier)
+        while self._peek_token.token_type == TokenType.COMMA:
+            self._advance_tokens()
+            self._advance_tokens()
+            identifier = self._parse_identifier()
+            params.append(identifier)
+        if not self._expected_token(Token(TokenType.RPAREN, ')')):
+            return []
+        return params
+
     def _parse_grouped_expression(self) -> Optional[Expression]:
         self._advance_tokens()
         expression = self._parse_expresion(Precedence.LOWEST)
@@ -192,7 +261,6 @@ class Parser:
         while not self._current_token.token_type == TokenType.RBRACE \
                     and not self._current_token.token_type == TokenType.EOF:
             statement = self._parse_statement()
-
             if statement:
                 block_statement.statements.append(statement)
             self._advance_tokens()
@@ -330,12 +398,14 @@ class Parser:
             TokenType.NOT_EQ: self._parse_infix_expression,
             TokenType.LT: self._parse_infix_expression,
             TokenType.GT: self._parse_infix_expression,
+            TokenType.LPAREN: self._parse_call,
         }
 
     #Un diccionario con todos los tipos de prefix y su funcion de parseo
     def _register_prefix_fns(self) -> PrefixParseFns:
         return {
             TokenType.FALSE: self._parse_boolean,
+            TokenType.FUNCTION: self._parse_function,
             TokenType.IDENT : self._parse_identifier,
             TokenType.IF: self._parse_if,
             TokenType.INT: self._parse_integer,
