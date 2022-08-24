@@ -346,12 +346,14 @@ class Parser:
         if not self._expected_token(Token(TokenType.ASSIGN,'=')):
             return None
 
-        #TODO terminar cuando sepamos parsear expresiones
+        self._advance_tokens()
 
-        #Avanza hasta que encuentre un punto y coma, o el final del archivo
-        while self._current_token.token_type != TokenType.SEMICOLON and self._current_token.token_type != TokenType.EOF:
+        let_statement.value = self._parse_expresion(Precedence.LOWEST)
+
+        assert self._peek_token is not None
+        if self._peek_token.token_type == TokenType.SEMICOLON:
             self._advance_tokens()
-        #Por ultimo retorna el LetStatement
+
         return let_statement
 
     #Si el token resulta ser un tipo Return, significa que estamos retornando una expresion
@@ -362,11 +364,12 @@ class Parser:
 
         self._advance_tokens()
 
-        # TODO terminar cuando sepamos parsear expresiones
-        #Avanza hasta que encuentre un punto y coma, o el final del archivo
-        while self._current_token.token_type != TokenType.SEMICOLON and self._current_token.token_type != TokenType.EOF:
+        return_statement.return_value = self._parse_expresion(Precedence.LOWEST)
+
+        assert self._peek_token is not None
+        if self._peek_token.token_type == TokenType.SEMICOLON:
             self._advance_tokens()
-        #Por ultimo retorna el ReturnStatement
+
         return return_statement
     
     #Cuando pasa un token, revisa que tipo de token es, de esta manera entra a una funcion
