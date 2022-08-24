@@ -1,4 +1,9 @@
+from typing import List
+import readline
+
+from kp.ast import Program
 from kp.lexer import Lexer
+from kp.parser import Parser
 from kp.token import (
     Token,
     TokenType,
@@ -6,8 +11,17 @@ from kp.token import (
 
 EOF_TOKEN: Token = Token(TokenType.EOF,'')
 
+def _print_parse_errors(errors: List[str]):
+    for error in errors:
+        print(error)
+
 def star_repl() -> None:
     while (source := input('-> ')) != 'salir()':
         lexer: Lexer = Lexer(source)
-        while (token := lexer.next_token()) != EOF_TOKEN:
-            print(token)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+        if len(parser.errors) > 0:
+            _print_parse_errors(parser.errors)
+            continue
+
+        print(program)
