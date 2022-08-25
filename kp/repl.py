@@ -8,6 +8,7 @@ from kp.token import (
     Token,
     TokenType,
 )
+from kp.evaluator import evaluate
 
 EOF_TOKEN: Token = Token(TokenType.EOF,'')
 
@@ -24,4 +25,7 @@ def star_repl() -> None:
             _print_parse_errors(parser.errors)
             continue
 
-        print(program)
+        evaluated = evaluate(program)
+        assert evaluated is not None
+        if evaluate is not None:
+            print(evaluated.inspect())
