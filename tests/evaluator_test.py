@@ -2,7 +2,7 @@ from unittest import TestCase
 from typing import (List,cast,Any,Type,Tuple)
 
 from kp.ast import Program
-from kp.evaluator import evaluate
+from kp.evaluator import (evaluate, NULL)
 from kp.lexer import Lexer
 from kp.parser import Parser
 from kp.object import(
@@ -71,9 +71,45 @@ class EvaluatorTest(TestCase):
         for source, expected in test:
             evaluated = self._evaluate_test(source)
             self._test_boolean_object(evaluated, expected)
+    
+    def test_if_else_evaluation(self) -> None:
+        test: List[Tuple[str, Any]] = [
+            ('si (verdadero) { 10; }', 10),
+            ('si (falso) { 10; }', None),
+            ('si (1) { 10; }', None),
+            ('si (1 < 2) { 10; }', 10),
+            ('si (1 > 2) { 10; }', None),
+            ('si (1 < 2) { 10; } si_no {20;}', 10),
+            ('si (1 > 2) { 10; } si_no {20;}', 20),
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            if type(expected) == int:
+                self._test_integer_object(evaluated, expected)
+            else:
+                self._test_null_object(evaluated)
+
+    def  test_return_evaluation(self) -> None:
+        test: List[Tuple[str, int]] = [
+            ('regresa 10;' , 10),
+            ('regresa 10; 9;' , 10),
+            ('regresa 2*5; 9;' , 10),
+            (' 9; regresa 3*6; 9;' , 18),
+            ('''
+                si(10 > 1){
+                   si (20 > 10){
+                    regresa 1;
+                   } 
+                   regresa 0;
+                }
+            ''' , 1),
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            self._test_integer_object(evaluated, expected)
 
 ###############################################AUXILIAR FUNCTIONS###############################################
-    
+
     def _evaluate_test(self, source: str) -> Object:
         lexer: Lexer = Lexer(source)
         parser: Parser = Parser(lexer)
@@ -82,6 +118,9 @@ class EvaluatorTest(TestCase):
         evaluated = evaluate(program)
         assert evaluated is not None
         return evaluated
+
+    def _test_null_object(self, evaluated: object) -> None:
+        self.assertEquals(evaluated, NULL)
 
     def _test_boolean_object(self, evaluated: Object, expected: bool) -> None:
         self.assertIsInstance(evaluated, Boolean)

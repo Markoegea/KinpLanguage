@@ -4,6 +4,7 @@ from enum import(auto,Enum)
 class ObjecType(Enum):
     BOOLEAN = auto()
     INTEGER = auto()
+    RETURN = auto()
     NULL = auto()
 
 class Object(ABC):
@@ -35,6 +36,16 @@ class Boolean(Object):
 
     def inspect(self) -> str:
         return 'verdadero' if self.value else 'falso'
+
+class Return(Object):
+    def __init__(self, value: Object) -> None:
+        self.value = value
+
+    def type(self) -> ObjecType:
+        return ObjecType.RETURN
+
+    def inspect(self) -> str:
+        return self.value.inspect()
 
 class Null(Object):
 
