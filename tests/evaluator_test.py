@@ -6,9 +6,11 @@ from kp.evaluator import (evaluate, NULL)
 from kp.lexer import Lexer
 from kp.parser import Parser
 from kp.object import(
+    Error,
     Object,
     Integer,
     Boolean,
+
 )
 
 class EvaluatorTest(TestCase):
@@ -108,12 +110,61 @@ class EvaluatorTest(TestCase):
             evaluated = self._evaluate_test(source)
             self._test_integer_object(evaluated, expected)
 
+    def test_error_handling(self) -> None:
+        test: List[Tuple[str, str]] = [
+            ('5 + verdadero',
+            'Poseemos un problema, no puedo ejecutar INTEGER + BOOLEAN'),
+            ('5 + verdadero; 9;',
+            'Poseemos un problema, no puedo ejecutar INTEGER + BOOLEAN'),
+            ('-verdadero;',
+            'Poseemos un problema, no puedo operar -BOOLEAN'),
+            ('verdadero-verdadero;',
+            'Poseemos un problema, no puedo operar BOOLEAN - BOOLEAN'),
+            ('5; verdadero+falso; 10;',
+            'Poseemos un problema, no puedo operar BOOLEAN + BOOLEAN'),
+            ('''
+                si (10 > 7){
+                    regresa verdadero + falso;
+                }
+            ''',
+            'Poseemos un problema, no puedo operar BOOLEAN + BOOLEAN'),
+            ('''
+                si (10 > 1){
+                    si(verdadero){
+                        regresa verdadero * falso;
+                    }
+                    regresa 1;
+                }
+            ''',
+            'Poseemos un problema, no puedo operar BOOLEAN * BOOLEAN'),
+            ('''
+                si (5 < 2){
+                    regresa 1;
+                } si_no {
+                    regresa verdadero / falso;
+                }
+            ''',
+            'Poseemos un problema, no puedo operar BOOLEAN / BOOLEAN'),
+
+        ]
+
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+
+            self. assertIsInstance(evaluated, Error)
+
+            evaluated = cast(Error, evaluated)
+            self.assertEquals(evaluated.message, expected)
+
+
+
 ###############################################AUXILIAR FUNCTIONS###############################################
 
     def _evaluate_test(self, source: str) -> Object:
         lexer: Lexer = Lexer(source)
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
+
 
         evaluated = evaluate(program)
         assert evaluated is not None

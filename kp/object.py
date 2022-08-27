@@ -5,7 +5,9 @@ class ObjecType(Enum):
     BOOLEAN = auto()
     INTEGER = auto()
     RETURN = auto()
+    ERROR = auto()
     NULL = auto()
+
 
 class Object(ABC):
     
@@ -54,3 +56,13 @@ class Null(Object):
 
     def inspect(self) -> str:
         return 'nulo'
+
+class Error(Object):
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+    def type(self) -> ObjecType:
+        return ObjecType.ERROR
+
+    def inspect(self) -> str:
+        return f'Error: {self.message}'
