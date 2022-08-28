@@ -10,7 +10,8 @@ from kp.object import(
     Object,
     Integer,
     Boolean,
-
+    Function,
+    Environment,
 )
 
 class EvaluatorTest(TestCase):
@@ -145,7 +146,10 @@ class EvaluatorTest(TestCase):
                 }
             ''',
             'Poseemos un problema, no puedo operar BOOLEAN / BOOLEAN'),
-
+            ('''
+                foobar;
+            ''',
+            'Poseemos un problema, que es "foobar"?'),
         ]
 
         for source, expected in test:
@@ -156,7 +160,61 @@ class EvaluatorTest(TestCase):
             evaluated = cast(Error, evaluated)
             self.assertEquals(evaluated.message, expected)
 
+    def test_assignment_evaluation(self) -> None:
+        test: List[Tuple[str, int]] = [
+            ('variable a = 5; a;', 5),
+            ('variable a = 5 * 5; a;', 25),
+            ('variable a = 5; variable b = a; b;', 5),
+            ('variable a = 5; variable b = a; variable c = a + b + 5; c;', 15),
+        ]
 
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            self._test_integer_object(evaluated, expected)
+
+    def test_function_evaluation(self) -> None:
+        source: str = 'procedimiento(x) {x + 2;};'
+
+        evaluated = self._evaluate_test(source)
+        self.assertIsInstance(evaluated,Function)
+
+        evaluated = cast(Function, evaluated)
+        self.assertEquals(len(evaluated.parameters),1)
+        self.assertEquals(str(evaluated.parameters[0]), 'x')
+        self.assertEquals(str(evaluated.body), '(x + 2)')
+
+    def test_function_calls(self) -> None:
+        test: List[Tuple[str, int]] = [
+            ('variable identidad = procedimiento(x) {x;}; identidad(5);', 5),
+            ('''
+            variable identidad = procedimiento(x){
+                regresa x;
+            };
+            identidad(5);
+            ''',5),
+            ('''
+            variable doble = procedimiento(x){
+                regresa 2* x;
+            };
+            doble(5);
+            ''',10),
+            ('''
+            variable suma = procedimiento(x, y){
+                regresa x + y;
+            };
+            suma(3,8);
+            ''',11),
+            ('''
+            variable suma = procedimiento(x, y){
+                regresa x + y;
+            };
+            suma(5 + 5, suma(10,10));
+            ''',30),
+            ('procedimiento(x){x;} (5)', 5),
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            self._test_integer_object(evaluated,expected)
 
 ###############################################AUXILIAR FUNCTIONS###############################################
 
@@ -164,9 +222,9 @@ class EvaluatorTest(TestCase):
         lexer: Lexer = Lexer(source)
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
+        env: Environment = Environment()
 
-
-        evaluated = evaluate(program)
+        evaluated = evaluate(program,env)
         assert evaluated is not None
         return evaluated
 
