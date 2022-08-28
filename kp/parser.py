@@ -15,6 +15,7 @@ from kp.ast import (
     Expression,
     Statement,
     LetStatement,
+    StringLiteral,
     ReturnStatement,
     ExpressionStatement,
 )
@@ -252,6 +253,11 @@ class Parser:
         return Identifier(token=self._current_token,
                         value=self._current_token.literal)
 
+    def _parse_string_literal(self) -> Expression:
+        assert self._current_token is not None
+        return StringLiteral(token=self._current_token,
+                            value=self._current_token.literal)
+
     def _parse_block(self) -> Optional[Block]:
         assert self._current_token is not None
         block_statement = Block(token=self._current_token,
@@ -416,4 +422,5 @@ class Parser:
             TokenType.LESS: self._parse_prefix_expresion,
             TokenType.NEGATION: self._parse_prefix_expresion,
             TokenType.TRUE: self._parse_boolean,
+            TokenType.STRING: self._parse_string_literal,
         }

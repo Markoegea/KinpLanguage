@@ -8,6 +8,7 @@ from kp.parser import Parser
 from kp.object import(
     Error,
     Object,
+    String,
     Integer,
     Boolean,
     Function,
@@ -215,6 +216,19 @@ class EvaluatorTest(TestCase):
         for source, expected in test:
             evaluated = self._evaluate_test(source)
             self._test_integer_object(evaluated,expected)
+    
+    def test_string_evaluation(self) -> None:
+        test: List[Tuple[str, str]] = [
+            ('"Hello world!"', 'Hello world!'),
+            ('procedimiento() { regresa "Kinp es re-genial"; } ()',
+            'Kinp es re-genial')
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            self.assertIsInstance(evaluated,String)
+
+            evaluated = cast(String, evaluated)
+            self.assertEquals(evaluated.value, expected)
 
 ###############################################AUXILIAR FUNCTIONS###############################################
 

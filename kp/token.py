@@ -30,6 +30,7 @@ class TokenType(Enum):
     RETURN = auto(),
     RPAREN = auto(),
     SEMICOLON = auto(),
+    STRING = auto()
     TRUE = auto(),
 
 #Una clase donde se crean los token, que tiene como parametros el nombre del token(enum) y el valor de ese token

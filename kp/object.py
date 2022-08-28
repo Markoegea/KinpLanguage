@@ -10,6 +10,7 @@ class ObjecType(Enum):
     FUNCTION = auto()
     BOOLEAN = auto()
     INTEGER = auto()
+    STRING = auto()
     RETURN = auto()
     ERROR = auto()
     NULL = auto()
@@ -44,6 +45,16 @@ class Boolean(Object):
 
     def inspect(self) -> str:
         return 'verdadero' if self.value else 'falso'
+
+class String(Object):
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+    def type(self) -> ObjecType:
+        return ObjecType.STRING
+
+    def inspect(self) -> str:
+        return self.value
 
 class Return(Object):
     def __init__(self, value: Object) -> None:

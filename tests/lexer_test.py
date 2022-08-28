@@ -9,7 +9,7 @@ from kp.lexer import Lexer
 
 class LexerTest(TestCase):
 
-    def get_tokens(self, source : str, lenght:int) -> List[Token]:
+    def _get_tokens(self, source : str, lenght:int) -> List[Token]:
         lexer: Lexer = Lexer(source)
         tokens: List[Token] = []
 
@@ -25,7 +25,7 @@ class LexerTest(TestCase):
             Token(TokenType.ILLEGAL, '¿'),
             Token(TokenType.ILLEGAL, '@'),
         ]
-        self.assertEquals(self.get_tokens(source,len(source)), expected_tokens)
+        self.assertEquals(self._get_tokens(source,len(source)), expected_tokens)
     
     def test_one_character_operator(self) -> None:
         source: str = '=+-/*<>!'
@@ -39,7 +39,7 @@ class LexerTest(TestCase):
             Token(TokenType.GT, '>'),
             Token(TokenType.NEGATION, '!'),
         ]
-        self.assertEquals(self.get_tokens(source,len(source)), expected_tokens)
+        self.assertEquals(self._get_tokens(source,len(source)), expected_tokens)
 
     def test_eof(self) -> None:
         source: str = '+'
@@ -47,7 +47,7 @@ class LexerTest(TestCase):
             Token(TokenType.PLUS, '+'),
             Token(TokenType.EOF, '')
         ]
-        self.assertEquals(self.get_tokens(source,len(source)+1), expected_tokens)
+        self.assertEquals(self._get_tokens(source,len(source)+1), expected_tokens)
 
     def test_delimiters(self) -> None:
         source: str = '(){},;'
@@ -59,7 +59,7 @@ class LexerTest(TestCase):
               Token(TokenType.COMMA, ','), 
               Token(TokenType.SEMICOLON, ';'),   
         ]        
-        self.assertEquals(self.get_tokens(source,len(source)), expected_tokens)
+        self.assertEquals(self._get_tokens(source,len(source)), expected_tokens)
     
     def test_assignment(self) -> None:
         source: str = 'variable cinco = 5;'
@@ -70,7 +70,7 @@ class LexerTest(TestCase):
             Token(TokenType.INT, '5'),
             Token(TokenType.SEMICOLON, ';'),
         ]
-        self.assertEquals(self.get_tokens(source,5), expected_tokens)
+        self.assertEquals(self._get_tokens(source,5), expected_tokens)
     
     def test_function_declaration(self) -> None:
         source: str = '''variable suma = procedimiento(x,y){
@@ -94,7 +94,7 @@ class LexerTest(TestCase):
             Token(TokenType.RBRACE, '}'),
             Token(TokenType.SEMICOLON, ';'),
         ] 
-        self.assertEquals(self.get_tokens(source,16), expected_tokens)
+        self.assertEquals(self._get_tokens(source,16), expected_tokens)
 
     def test_function_call(self) -> None:
         source : str = 'variable resultado = suma(dos,tres);'
@@ -110,7 +110,7 @@ class LexerTest(TestCase):
             Token(TokenType.RPAREN, ')'),
             Token(TokenType.SEMICOLON, ';'),
         ]
-        self.assertEquals(self.get_tokens(source,10), expected_tokens)
+        self.assertEquals(self._get_tokens(source,10), expected_tokens)
 
     def test_control_statement(self) -> None:
         source : str = '''
@@ -139,7 +139,7 @@ class LexerTest(TestCase):
             Token(TokenType.SEMICOLON, ';'),
             Token(TokenType.RBRACE, '}'),
         ]
-        self.assertEquals(self.get_tokens(source,17), expected_tokens)
+        self.assertEquals(self._get_tokens(source,17), expected_tokens)
     
     def test_two_character_operator(self) -> None:
         source: str = '''
@@ -156,4 +156,18 @@ class LexerTest(TestCase):
             Token(TokenType.INT, '19'),
             Token(TokenType.SEMICOLON, ';'),
         ]
-        self.assertEquals(self.get_tokens(source,8), expected_tokens)
+        self.assertEquals(self._get_tokens(source,8), expected_tokens)
+
+    def test_string(self) -> None:
+        source: str = '''
+        "foo";
+        "Kinp es el mejor lenguaje de Programacion";
+        '''
+        expected_tokens: List[Token] =[
+            Token(TokenType.STRING, 'foo'),
+            Token(TokenType.SEMICOLON, ';'),
+            Token(TokenType.STRING, 'Kinp es el mejor lenguaje de Programacion'),
+            Token(TokenType.SEMICOLON, ';'),
+        ]
+        self.assertEquals(self._get_tokens(source,4),expected_tokens)
+

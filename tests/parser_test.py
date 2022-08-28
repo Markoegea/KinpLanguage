@@ -18,8 +18,9 @@ from kp.ast import (
     Identifier,
     Expression,
     LetStatement,
+    StringLiteral,
     ReturnStatement,
-    ExpressionStatement
+    ExpressionStatement,
 )
 from kp.lexer import Lexer
 from kp.parser import Parser
@@ -347,6 +348,18 @@ class ParserTest(TestCase):
         self._test_literal_expression(call.arguments[0], 1)
         self._test_infix_expression(call.arguments[1], 2, '*', 3)
         self._test_infix_expression(call.arguments[2], 4, '+', 5)
+
+    def test_string_literal_expression(self) -> None:
+        source: str = '"hello world!"'
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        expression_statement = cast(ExpressionStatement, program.statements[0])
+        string_literal = cast(StringLiteral, expression_statement.expression)
+
+        self.assertIsInstance(string_literal, StringLiteral)
+        self.assertEquals(string_literal.value, 'hello world!')
 
 #######################AUXILIAR FUNCTIONS###########################################
     def _test_infix_expression(self, expression: Expression,
