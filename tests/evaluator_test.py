@@ -1,5 +1,5 @@
 from unittest import TestCase
-from typing import (List,cast,Any,Type,Tuple)
+from typing import (List,cast,Any,Type,Tuple,Union)
 
 from kp.ast import Program
 from kp.evaluator import (evaluate, NULL)
@@ -151,6 +151,8 @@ class EvaluatorTest(TestCase):
                 foobar;
             ''',
             'Poseemos un problema, que es "foobar"?'),
+            ( '"foo" - "bar";',
+            'Poseemos un problema, no puedo operar STRING - STRING'),
         ]
 
         for source, expected in test:
@@ -230,6 +232,53 @@ class EvaluatorTest(TestCase):
             evaluated = cast(String, evaluated)
             self.assertEquals(evaluated.value, expected)
 
+    def test_string_concatenation(self) -> None:
+        test: List[Tuple[str,str]] = [
+            ('"FOO" + "BAR";', 'FOOBAR'),
+            ('"Hello," + " " +"world!";', 'Hello, world!'),
+            ('''
+                variable saludo = procedimiento(nombre) {
+                    regresa "Hola " + nombre + "!";
+                };
+                saludo("Marco");
+            ''', 
+            'Hola Marco!'),
+        ]
+
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            self._test_string_object(evaluated, expected)
+
+    def test_string_comparation(self) -> None:
+        test: List[Tuple[str, bool]] = [
+            ('"a" == "a"', True),
+            ('"a" != "a"', False),
+            ('"a" == "A"', False),
+            ('"a" != "A"', True),
+        ]
+
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            self._test_boolean_object(evaluated, expected)
+
+    def test_builtin_functions(self) -> None:
+        test: List[Tuple[str,Union[str,int]]] = [
+            ('longitud("");', 0),
+            ('longitud("cuatro");', 6),
+            ('longitud("Hola mundo");', 10),
+            ('longitud(1);', 'Poseemos un problema, no tengo soporte para INTEGER'),
+            ('longitud("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            print(expected)
+            if type(expected) == int:
+                expected = cast(int, expected)
+                self._test_integer_object(evaluated, expected)
+            else:
+                expected = cast(str, expected)
+                self._test_error_object(evaluated, expected)
+
 ###############################################AUXILIAR FUNCTIONS###############################################
 
     def _evaluate_test(self, source: str) -> Object:
@@ -256,3 +305,15 @@ class EvaluatorTest(TestCase):
 
         evaluated = cast(Integer, evaluated)
         self.assertEquals(evaluated.value, expected)
+
+    def _test_string_object(self, evaluated:Object, expected:str) -> None:
+        self.assertIsInstance(evaluated, String)
+
+        evaluated = cast(String, evaluated)
+        self.assertEquals(evaluated.value,expected)
+
+    def _test_error_object(self, evaluated: Object, expected: str) -> None:
+        self.assertIsInstance(evaluated, Error)
+
+        evaluated = cast(Error, evaluated)
+        self.assertEquals(evaluated.message, expected)

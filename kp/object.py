@@ -1,5 +1,7 @@
 from abc import(ABC,abstractmethod)
 from enum import(auto,Enum)
+from typing_extensions import Protocol
+
 from typing import (Dict, List)
 from kp.ast import (
     Block,
@@ -8,6 +10,7 @@ from kp.ast import (
 
 class ObjecType(Enum):
     FUNCTION = auto()
+    BUILTIN = auto()
     BOOLEAN = auto()
     INTEGER = auto()
     STRING = auto()
@@ -121,3 +124,18 @@ class Function(Object):
     def inspect(self) -> str:
         params: str = ', '.join([str(param) for param in self.parameters])
         return 'procedimiento({}) {{\n{}\n}}'.format(params, str(self.body))
+
+class BuiltinFunction(Protocol):
+
+    def __call__(self, *args: Object) -> Object: ...
+
+class Builtin(Object):
+
+    def __init__(self, fn: BuiltinFunction):
+        self.fn = fn
+
+    def type(self) -> ObjecType:
+        return ObjecType.BUILTIN
+    
+    def inspect(self) -> str:
+        return 'Builtin function' 

@@ -1,12 +1,14 @@
 from typing import (Any,cast,List,Optional,Type)
 
 import kp.ast as ast
+from kp.builtins import BUILTINS
 from kp.object import (
     Null,
     Error,
     Object,
     Return,
     String,
+    Builtin,
     Integer,
     Boolean,
     Function,
@@ -135,16 +137,19 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
     return None
 
 def _apply_function(fn: Object, args: List[Object])-> Object:
-    if type(fn) != Function:
+    if type(fn) == Function:
+            fn = cast(Function,fn)
+
+            extended_environment = _extended_function_environment(fn, args)
+            evaluated = evaluate(fn.body, extended_environment)
+
+            assert evaluated is not None
+            return _unwrap_return_value(evaluated)
+    elif type(fn) == Builtin:
+        fn= cast(Builtin,fn)
+        return fn.fn(*args)
+    else:
         return _new_error(_NOT_A_FUNCTION, [fn.type().name])
-
-    fn = cast(Function,fn)
-
-    extended_environment = _extended_function_environment(fn, args)
-    evaluated = evaluate(fn.body, extended_environment)
-
-    assert evaluated is not None
-    return _unwrap_return_value(evaluated)
 
 def _extended_function_environment(fn: Function, args: List[Object]) -> Environment:
     env = Environment(outer=fn.env)
@@ -174,7 +179,7 @@ def _evaluate_identifier(node: ast.Identifier, env:Environment) -> Object:
     try:
         return env[node.value]
     except KeyError:
-        return _new_error(_UNKNOWN_IDENTIFIER,[node.value])
+        return BUILTINS.get(node.value, _new_error(_UNKNOWN_IDENTIFIER,[node.value]))
 
 def _evaluate_if_expression(if_expression: ast.If, env: Environment) -> Optional[Object]:
     assert if_expression.condition is not None
@@ -213,6 +218,8 @@ def _evaluate_infix_expression(operator: str, left: Object, right: Object) -> Ob
 
     if left.type() == ObjecType.INTEGER and right.type() == ObjecType.INTEGER:
         return _evaluate_integer_infix_expression(operator, left, right)
+    elif left.type() == ObjecType.STRING and right.type() == ObjecType.STRING:
+        return _evaluate_string_infix_expression(operator, left, right)
     elif operator == '==':
         return _to_boolean_object(left is right)
     elif operator == '!=':
@@ -245,6 +252,20 @@ def _evaluate_integer_infix_expression(operator: str, left:Object, right: Object
         return _to_boolean_object(left_value != right_value)
     else:
         return _new_error(_UNKNOWN_INFIX_OPERATION, [left.type().name,operator, right.type().name])
+
+def _evaluate_string_infix_expression(operator: str, left: Object, right: Object) -> Object:
+
+    left_value: str = cast(String, left).value
+    right_value: str = cast(String, right).value
+
+    if operator == '+':
+        return String(left_value+right_value)
+    elif operator == '==':
+        return _to_boolean_object(left_value == right_value)
+    elif operator == '!=':
+        return _to_boolean_object(left_value != right_value)
+    else:
+        return _new_error(_UNKNOWN_INFIX_OPERATION, [left.type().name, operator, right.type().name] )
 
 def _evaluate_prefix_expression(operator: str, right: Object) -> Object:
     if operator == '!':
