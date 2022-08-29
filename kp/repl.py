@@ -1,5 +1,4 @@
 from typing import List
-import readline
 
 from kp.ast import Program
 from kp.lexer import Lexer
@@ -47,8 +46,8 @@ def file_evaluator(path:str) -> None:
     scanned: List[str] = []
     try:
         with open(path, mode='r', encoding='utf-8') as file:
-            lines = file.readlines()
-        src = '\n'.join([str(line) for line in lines])
+            lines = file.read()
+        src = lines
         star_repl(src,scanned)
     except FileNotFoundError:
         print(_FILENOTFOUND.format(path)+'\n')

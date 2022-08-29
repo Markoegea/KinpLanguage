@@ -276,11 +276,11 @@ class EvaluatorTest(TestCase):
             ('longitud(1);', 'Poseemos un problema, no tengo soporte para INTEGER'),
             ('longitud("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
 
-            # ('imprimir("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
-            # ('imprimir(1);', "1"),
-            # ('imprimir(2*3*4);', "24"),
-            # ('imprimir(((2+3)*(4*7))/5);', "28"),
-            # ('variable edad = procedimiento() {regresa verdadero; };imprimir(edad());', "verdadero"),
+            #('imprimir("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
+            #('imprimir(1);', "1"),
+            #('imprimir(2*3*4);', "24"),
+            #('imprimir((((2+3)*(4*7))/5));', "28"),
+            #('variable edad = procedimiento() {regresa verdadero; };imprimir(edad());', "verdadero"),
         ]
         for source, expected in test:
             evaluated = self._evaluate_test(source)

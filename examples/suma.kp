@@ -1,0 +1,6 @@
+variable suma_numeros = procedimiento(x,y){
+    variable suma = x + y;
+    regresa suma;
+};
+
+imprimir(suma_numeros(52,9));
