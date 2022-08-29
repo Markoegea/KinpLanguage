@@ -1,0 +1,8 @@
+variable factorial = procedimiento(n){
+    si (n == 1){
+        regresa 1;
+    }
+    regresa n * factorial(n-1);
+};
+
+imprimir(factorial(7));

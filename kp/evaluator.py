@@ -78,10 +78,18 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
         node = cast(ast.Infix, node)
 
         assert node.left is not None and node.right is not None
-        left = evaluate(node.left,env)
-        right = evaluate(node.right,env)
-        assert left is not None and right is not None
-        return _evaluate_infix_expression(node.operator, left, right)
+        if (type(node.left) == ast.Identifier and node.operator == '='):
+            variable = cast(ast.Identifier, node.left)
+            if (type(existence:=_identifier_exist(variable,env)) != Error):
+                value = evaluate(node.right,env)
+                env[variable.value] = value
+            else:
+                return existence
+        else:
+            left = evaluate(node.left,env)
+            right = evaluate(node.right,env)
+            assert left is not None and right is not None
+            return _evaluate_infix_expression(node.operator, left, right)
 
     elif node_type == ast.Block:
         node = cast(ast.Block, node)
@@ -176,6 +184,12 @@ def _evaluate_expression(expressions: List[ast.Expression], env: Environment) ->
     return result
 
 def _evaluate_identifier(node: ast.Identifier, env:Environment) -> Object:
+    try:
+        return env[node.value]
+    except KeyError:
+        return BUILTINS.get(node.value, _new_error(_UNKNOWN_IDENTIFIER,[node.value]))
+
+def _identifier_exist(node: ast.Identifier, env:Environment) -> Object:
     try:
         return env[node.value]
     except KeyError:

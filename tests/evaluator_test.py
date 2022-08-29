@@ -153,9 +153,14 @@ class EvaluatorTest(TestCase):
             'Poseemos un problema, que es "foobar"?'),
             ( '"foo" - "bar";',
             'Poseemos un problema, no puedo operar STRING - STRING'),
+            ( 'pies = 31;',
+            'Poseemos un problema, que es "pies"?'),
+            ( 'variable manos = "marco"; pies = "hola"; manos+pies;',
+            'Poseemos un problema, que es "pies"?'),
         ]
 
         for source, expected in test:
+            print(source)
             evaluated = self._evaluate_test(source)
 
             self. assertIsInstance(evaluated, Error)
@@ -169,6 +174,8 @@ class EvaluatorTest(TestCase):
             ('variable a = 5 * 5; a;', 25),
             ('variable a = 5; variable b = a; b;', 5),
             ('variable a = 5; variable b = a; variable c = a + b + 5; c;', 15),
+            ('variable a = 5; a=10; a;',10),
+            ('variable a = 15; a=100; variable b = 200; variable c = a+b; c;',300),
         ]
 
         for source, expected in test:
@@ -268,10 +275,15 @@ class EvaluatorTest(TestCase):
             ('longitud("Hola mundo");', 10),
             ('longitud(1);', 'Poseemos un problema, no tengo soporte para INTEGER'),
             ('longitud("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
+
+            # ('imprimir("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
+            # ('imprimir(1);', "1"),
+            # ('imprimir(2*3*4);', "24"),
+            # ('imprimir(((2+3)*(4*7))/5);', "28"),
+            # ('variable edad = procedimiento() {regresa verdadero; };imprimir(edad());', "verdadero"),
         ]
         for source, expected in test:
             evaluated = self._evaluate_test(source)
-            print(expected)
             if type(expected) == int:
                 expected = cast(int, expected)
                 self._test_integer_object(evaluated, expected)

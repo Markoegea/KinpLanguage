@@ -44,6 +44,7 @@ class Precedence(IntEnum):
     CALL = 7
 
 PRECEDENCES: Dict[TokenType,Precedence] = {
+    TokenType.ASSIGN: Precedence.EQUALS,
     TokenType.EQ: Precedence.EQUALS,
     TokenType.NOT_EQ: Precedence.EQUALS,
     TokenType.LT: Precedence.LESSGREATER,
@@ -408,6 +409,7 @@ class Parser:
             TokenType.LT: self._parse_infix_expression,
             TokenType.GT: self._parse_infix_expression,
             TokenType.LPAREN: self._parse_call,
+            TokenType.ASSIGN: self._parse_infix_expression,
         }
 
     #Un diccionario con todos los tipos de prefix y su funcion de parseo
