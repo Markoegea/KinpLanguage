@@ -145,6 +145,10 @@ class LexerTest(TestCase):
         source: str = '''
             10 == 11;
             10 != 19;
+            11 >= 12;
+            222 <= 212;
+            33 >= 33;
+            -90 >= -90;
         '''
         expected_tokens: List[Token] = [
             Token(TokenType.INT, '10'),
@@ -154,6 +158,28 @@ class LexerTest(TestCase):
             Token(TokenType.INT, '10'),
             Token(TokenType.NOT_EQ, '!='),
             Token(TokenType.INT, '19'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.INT, '11'),
+            Token(TokenType.GEQT, '>='),
+            Token(TokenType.INT, '12'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.INT, '222'),
+            Token(TokenType.LEQT, '<='),
+            Token(TokenType.INT, '212'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.INT, '33'),
+            Token(TokenType.GEQT, '>='),
+            Token(TokenType.INT, '33'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '90'),
+            Token(TokenType.GEQT, '>='),
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '90'),
             Token(TokenType.SEMICOLON, ';'),
         ]
         self.assertEquals(self._get_tokens(source,8), expected_tokens)

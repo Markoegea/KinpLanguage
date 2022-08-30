@@ -107,6 +107,22 @@ class EvaluatorTest(TestCase):
                    regresa 0;
                 }
             ''' , 1),
+            ('''
+                si(10 >= 1){
+                   si (20 >= 20){
+                    regresa 1;
+                   } 
+                   regresa 0;
+                }
+            ''' , 1),
+            ('''
+                si(10 <= 10){
+                   si (20 <= 19){
+                    regresa 1;
+                   } 
+                   regresa 0;
+                }
+            ''' , 0),
         ]
         for source, expected in test:
             evaluated = self._evaluate_test(source)
