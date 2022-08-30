@@ -1,3 +1,4 @@
+import readline
 from typing import List
 
 from kp.ast import Program

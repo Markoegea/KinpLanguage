@@ -155,6 +155,7 @@ class LexerTest(TestCase):
             Token(TokenType.EQ, '=='),
             Token(TokenType.INT, '11'),
             Token(TokenType.SEMICOLON, ';'),
+
             Token(TokenType.INT, '10'),
             Token(TokenType.NOT_EQ, '!='),
             Token(TokenType.INT, '19'),
@@ -182,7 +183,7 @@ class LexerTest(TestCase):
             Token(TokenType.INT, '90'),
             Token(TokenType.SEMICOLON, ';'),
         ]
-        self.assertEquals(self._get_tokens(source,8), expected_tokens)
+        self.assertEquals(self._get_tokens(source,26), expected_tokens)
 
     def test_string(self) -> None:
         source: str = '''

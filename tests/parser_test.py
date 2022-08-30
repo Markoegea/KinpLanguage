@@ -159,7 +159,7 @@ class ParserTest(TestCase):
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
 
-        self._test_program_statements(parser,program,expected_statements_count=10)
+        self._test_program_statements(parser,program,expected_statements_count=12)
         expected_operators_and_values: List[Tuple[Any,str,Any]] = [
             (5,'+',5),
             (5,'-',5),

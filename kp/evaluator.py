@@ -260,6 +260,10 @@ def _evaluate_integer_infix_expression(operator: str, left:Object, right: Object
         return _to_boolean_object(left_value < right_value)
     elif operator == '>':
         return _to_boolean_object(left_value > right_value)
+    elif operator == '<=':
+        return _to_boolean_object(left_value <= right_value)
+    elif operator == '>=':
+        return _to_boolean_object(left_value >= right_value)
     elif operator == '==':
         return _to_boolean_object(left_value == right_value)
     elif operator == '!=':

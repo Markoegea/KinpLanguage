@@ -70,10 +70,16 @@ class Lexer:
             token = Token(TokenType.SEMICOLON, self._character)
         
         elif match(r'^\<$',self._character):
-            token = Token(TokenType.LT, self._character)
+            if self._peek_character() == '=':
+                token = self._make_two_character_token(TokenType.LEQT)
+            else:
+                token = Token(TokenType.LT, self._character)
 
         elif match(r'^\>$',self._character):
-            token = Token(TokenType.GT, self._character)
+            if self._peek_character() == '=':
+                token = self._make_two_character_token(TokenType.GEQT)
+            else:
+                token = Token(TokenType.GT, self._character)
 
         elif match(r'^!$',self._character):
             if self._peek_character() == '=':
