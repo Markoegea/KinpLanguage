@@ -1,0 +1,7 @@
+variable cpu = "Lucy";
+variable nombre = recibir("Dime tu nombre, por favor: ");
+
+variable mensaje = "Mucho gusto, " + nombre + ", mi nombre es " + cpu;
+
+imprimir(mensaje);
+

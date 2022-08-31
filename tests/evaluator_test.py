@@ -285,27 +285,53 @@ class EvaluatorTest(TestCase):
             self._test_boolean_object(evaluated, expected)
 
     def test_builtin_functions(self) -> None:
-        test: List[Tuple[str,Union[str,int]]] = [
-            ('longitud("");', 0),
-            ('longitud("cuatro");', 6),
-            ('longitud("Hola mundo");', 10),
-            ('longitud(1);', 'Poseemos un problema, no tengo soporte para INTEGER'),
-            ('longitud("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
-
             #('imprimir("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
             #('imprimir(1);', "1"),
             #('imprimir(2*3*4);', "24"),
             #('imprimir((((2+3)*(4*7))/5));', "28"),
             #('variable edad = procedimiento() {regresa verdadero; };imprimir(edad());', "verdadero"),
+        test: List[Tuple[str,Union[str,int,bool]]] = [
+            ('longitud("");', 0),
+            ('longitud("cuatro");', 6),
+            ('longitud("Hola mundo");', 10),
+
+            ('parsearAentero("1564");', 1564),
+            ('parsearAentero("-1564");', -1564),
+            ('parsearAentero(verdadero);', 1),
+            ('parsearAentero(falso);', 0),
+
+            ('parsearAtexto(99999);', "99999"),
+            ('parsearAtexto(verdadero);', "verdadero"),
+            ('parsearAtexto(falso);', "falso"),
+
+            ('parsearAbooleano(1);', True),
+            ('parsearAbooleano(0);', False),
+            ('parsearAbooleano(24);', False),
         ]
         for source, expected in test:
             evaluated = self._evaluate_test(source)
+            print(source)
             if type(expected) == int:
                 expected = cast(int, expected)
                 self._test_integer_object(evaluated, expected)
+            elif type(expected) == bool:
+                expected = cast(bool, expected)
+                self._test_boolean_object(evaluated,expected)
             else:
                 expected = cast(str, expected)
-                self._test_error_object(evaluated, expected)
+                self._test_string_object(evaluated, expected)
+
+    def test_builtin_functions_errors(self) -> None:
+        test: List[Tuple[str,str]] = [
+            ('longitud(1);', 'Poseemos un problema, no tengo soporte para INTEGER'),
+            ('longitud("uno", "dos");', 'Poseemos un problema, numero incorrecto de argumentos, se requeria 1, pero se recibio 2'),
+            ('parsearAentero("veinte");', 'Poseemos un problema, "veinte" no es numero y no se puede castear'),
+            ('parsearAbooleano("verdadero");', 'Poseemos un problema, no tengo soporte para STRING'),
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            expected = cast(str, expected)
+            self._test_error_object(evaluated, expected)
 
 ###############################################AUXILIAR FUNCTIONS###############################################
 

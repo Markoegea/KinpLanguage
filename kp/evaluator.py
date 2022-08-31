@@ -146,6 +146,7 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
 
 def _apply_function(fn: Object, args: List[Object])-> Object:
     if type(fn) == Function:
+
             fn = cast(Function,fn)
 
             extended_environment = _extended_function_environment(fn, args)
@@ -161,9 +162,8 @@ def _apply_function(fn: Object, args: List[Object])-> Object:
 
 def _extended_function_environment(fn: Function, args: List[Object]) -> Environment:
     env = Environment(outer=fn.env)
-
     for idx, param in enumerate(fn.parameters):
-        env[param.value] = args[idx - 1]
+        env[param.value] = args[idx]
     return env
 
 def _unwrap_return_value(obj: Object) -> Object:
@@ -234,6 +234,8 @@ def _evaluate_infix_expression(operator: str, left: Object, right: Object) -> Ob
         return _evaluate_integer_infix_expression(operator, left, right)
     elif left.type() == ObjecType.STRING and right.type() == ObjecType.STRING:
         return _evaluate_string_infix_expression(operator, left, right)
+    elif (left.type() == ObjecType.STRING or right.type() == ObjecType.STRING) and operator == '+':
+        return _evaluate_string_infix_concatenation(operator, left, right)
     elif operator == '==':
         return _to_boolean_object(left is right)
     elif operator == '!=':
@@ -284,6 +286,14 @@ def _evaluate_string_infix_expression(operator: str, left: Object, right: Object
         return _to_boolean_object(left_value != right_value)
     else:
         return _new_error(_UNKNOWN_INFIX_OPERATION, [left.type().name, operator, right.type().name] )
+
+def _evaluate_string_infix_concatenation(operator: str, left: Object, right: Object) -> Object:
+    
+    left_value: str = left.inspect()
+    right_value: str = right.inspect()
+    
+    return String(left_value+right_value)
+
 
 def _evaluate_prefix_expression(operator: str, right: Object) -> Object:
     if operator == '!':
