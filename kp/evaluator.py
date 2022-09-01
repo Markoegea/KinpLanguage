@@ -26,6 +26,7 @@ _UNKNOWN_PREFIX_OPERATION = 'Poseemos un problema, no puedo operar {}{}'
 _UNKNOWN_INFIX_OPERATION = 'Poseemos un problema, no puedo operar {} {} {}'
 _UNKNOWN_IDENTIFIER = 'Poseemos un problema, que es "{}"?'
 
+
 def _evaluate_program(program: ast.Program, env: Environment) -> Optional[Object]:
     result: Optional[Object] = None
     for statement in program.statements:
@@ -80,11 +81,7 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
         assert node.left is not None and node.right is not None
         if (type(node.left) == ast.Identifier and node.operator == '='):
             variable = cast(ast.Identifier, node.left)
-            if (type(existence:=_identifier_exist(variable,env)) != Error):
-                value = evaluate(node.right,env)
-                env[variable.value] = value
-            else:
-                return existence
+            return _assign_let_statement(variable, node.right, env)
         else:
             left = evaluate(node.left,env)
             right = evaluate(node.right,env)
@@ -114,6 +111,8 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
         
         assert node.value is not None
         value = evaluate(node.value, env)
+        if value == Error:
+            return value
 
         assert node.name is not None
         env[node.name.value] = value
@@ -140,9 +139,23 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
         node = cast(ast.StringLiteral, node)
 
         return String(node.value)
+    elif node_type == ast.Null:
+        return NULL
 
 
     return None
+
+def _assign_let_statement(variable: ast.Identifier, right: ast.Expression, env: Environment):
+    assert variable is not None and right is not None
+    if type(existence:=_identifier_exist(variable,env)) != Error:
+        value = evaluate(right,env)
+        if type(value) != Error:
+            env[variable.value] = value
+            return NULL
+        else:
+            return value
+    else:
+        return existence
 
 def _apply_function(fn: Object, args: List[Object])-> Object:
     if type(fn) == Function:
@@ -326,4 +339,5 @@ def _to_boolean_object(value: bool)->Boolean:
     return TRUE if value else FALSE
 
 def _new_error(message: str, args: List[Any]) -> Error:
-    return Error(message.format(*args))
+    error = Error(message.format(*args))
+    return error

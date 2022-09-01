@@ -1,0 +1,33 @@
+variable menu = " Bienvenido al conversos de monedas, que deseas?
+🥇De dolares a pesos [1] o 
+de pesos a dolares [2]?: ";
+
+variable conversor = procedimiento(eleccion){
+    variable valor_dolar = 4422;
+    variable moneda_a_convertir;
+    variable moneda;
+
+    si (eleccion == 1){
+        moneda_a_convertir = parsearAentero(recibir("Cuantos dolares tienes?: "));
+        moneda_a_convertir = moneda_a_convertir * valor_dolar;
+        moneda = "Pesos colombianos";
+
+        imprimir("Tu tienes " + moneda_a_convertir +" " +moneda);
+        regresa;
+    }
+
+    si (eleccion == 2){
+        moneda_a_convertir = parsearAentero(recibir("Cuantos pesos colombianos tienes?:"));
+        moneda_a_convertir = moneda_a_convertir / valor_dolar;
+        moneda = "Dolares";
+
+        imprimir("Tu tienes " + moneda_a_convertir +" " +moneda);
+        regresa;
+    }
+
+    imprimir("Enserio? escoge una opcion correcta");
+    regresa;
+};
+
+variable eleccion = parsearAentero(recibir(menu));
+conversor(eleccion);

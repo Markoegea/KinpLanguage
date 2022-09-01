@@ -340,7 +340,7 @@ class EvaluatorTest(TestCase):
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
         env: Environment = Environment()
-
+        
         evaluated = evaluate(program,env)
         assert evaluated is not None
         return evaluated

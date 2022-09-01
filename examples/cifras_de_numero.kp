@@ -1,0 +1,17 @@
+variable menu = "Buenas, quieres saber cuantas cifras tiene un numero?, 
+averguemoslo juntos, escribe un numero: ";
+
+
+variable buenas_cifras = procedimiento(i){
+    si (i==1){
+        regresa "El numero "+numero+" tiene " + i +" cifra";
+    }  
+    si_no{
+        regresa "El numero "+numero+" tiene " + i +" cifras";
+    }     
+};    
+        
+variable numero_entrar = parsearAentero(recibir(menu));
+variable numero = parsearAtexto(numero_entrar);
+
+imprimir(buenas_cifras(longitud(numero)));

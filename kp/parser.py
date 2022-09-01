@@ -4,6 +4,7 @@ from typing import (Callable,Dict,Optional,List)
 from kp.ast import (
     If,
     Call,
+    Null,
     Block,
     Infix,
     Prefix,
@@ -352,14 +353,19 @@ class Parser:
         #la variable name del LetStatement, es un identifier que retorna de otra funcion
         let_statement.name = self._parse_identifier()
 
-        if not self._expected_token(Token(TokenType.ASSIGN,'=')):
-            return None
-
-        self._advance_tokens()
-
-        let_statement.value = self._parse_expresion(Precedence.LOWEST)
-
         assert self._peek_token is not None
+        if self._peek_token.token_type != TokenType.SEMICOLON:
+
+            if not self._expected_token(Token(TokenType.ASSIGN,'=')):
+                return None
+
+            self._advance_tokens()
+
+            let_statement.value = self._parse_expresion(Precedence.LOWEST)
+        else:
+            let_statement.value = Null(self._current_token)
+
+
         if self._peek_token.token_type == TokenType.SEMICOLON:
             self._advance_tokens()
 
@@ -373,9 +379,12 @@ class Parser:
 
         self._advance_tokens()
 
-        return_statement.return_value = self._parse_expresion(Precedence.LOWEST)
-
         assert self._peek_token is not None
+        if self._current_token.token_type != TokenType.SEMICOLON:
+            return_statement.return_value = self._parse_expresion(Precedence.LOWEST)
+        else:
+            return_statement.return_value = Null(self._current_token)
+
         if self._peek_token.token_type == TokenType.SEMICOLON:
             self._advance_tokens()
 

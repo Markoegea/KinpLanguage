@@ -82,6 +82,15 @@ class Integer(Expression):
     def __str__(self)->str:
         return str(self.value)
 
+class Null(Expression):
+    def __init__(self,
+            token: Token) -> None:
+        super().__init__(token)
+        self.value = None
+    
+    def __str__(self)->str:
+        return str(self.value)
+
 #Clase Prefix que hereda de Expression, recibe como parametros un token, un operador y una expresion(Indentifier o Integer)
 class Prefix(Expression):
     def __init__(self,
