@@ -5,6 +5,7 @@ from kp.ast import (
     If,
     Call,
     Null,
+    Float,
     Block,
     Infix,
     Prefix,
@@ -315,6 +316,20 @@ class Parser:
 
         return integer
 
+    #Parsea el token actual como un tipo Float
+    def _parse_float(self)-> Optional[Float]:
+        assert self._current_token is not None
+        floating = Float(token=self._current_token)
+        try:
+            floating.value = float(self._current_token.literal)
+        except ValueError:
+            #Si el valor del token no es un numero, agrega el error a la lista de errores
+            message = f'No se ha podido parsear {self._current_token.literal} como entero'
+            self._errors.append(message)
+            return None
+
+        return floating
+
     #Parsea el token actual como un tipo Infix, pero como este mismo tiene un lado derecho y uno izquierdo
     #Llama a la funcion self._parse_expresion, para traer esa expresion
     def _parse_infix_expression(self, left: Expression) -> Infix:
@@ -429,6 +444,7 @@ class Parser:
     def _register_prefix_fns(self) -> PrefixParseFns:
         return {
             TokenType.FALSE: self._parse_boolean,
+            TokenType.FLOAT: self._parse_float,
             TokenType.FUNCTION: self._parse_function,
             TokenType.IDENT : self._parse_identifier,
             TokenType.IF: self._parse_if,

@@ -3,7 +3,7 @@ variable menu = " Bienvenido al conversos de monedas, que deseas?
 de pesos a dolares [2]?: ";
 
 variable conversor = procedimiento(eleccion){
-    variable valor_dolar = 4422;
+    variable valor_dolar = 4492.0;
     variable moneda_a_convertir;
     variable moneda;
 

@@ -11,6 +11,7 @@ class TokenType(Enum):
     EOF = auto(),
     EQ = auto(),
     FALSE = auto(),
+    FLOAT = auto(),
     FUNCTION = auto(),
     IDENT = auto(),
     IF = auto(),

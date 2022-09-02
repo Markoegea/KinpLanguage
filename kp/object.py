@@ -16,6 +16,7 @@ class ObjecType(Enum):
     STRING = auto()
     RETURN = auto()
     ERROR = auto()
+    FLOAT = auto()
     NULL = auto()
 
 
@@ -35,6 +36,16 @@ class Integer(Object):
     
     def type(self) -> ObjecType:
         return ObjecType.INTEGER
+
+    def inspect(self) -> str:
+        return str(self.value)
+
+class Float(Object):
+    def __init__(self, value: float) -> None:
+        self.value = value
+    
+    def type(self) -> ObjecType:
+        return ObjecType.FLOAT
 
     def inspect(self) -> str:
         return str(self.value)

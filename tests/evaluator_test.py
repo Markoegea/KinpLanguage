@@ -7,6 +7,7 @@ from kp.lexer import Lexer
 from kp.parser import Parser
 from kp.object import(
     Error,
+    Float,
     Object,
     String,
     Integer,
@@ -27,15 +28,30 @@ class EvaluatorTest(TestCase):
             ('5-10',-5),
             ('2*2*2*2',16),
             ('2*5-3',7),
-            ('50 / 2',25),
+            ('parsearAentero(50 / 2)',25),
             ('2 * (5 - 3)',4),
-            ('(2 + 7) / 3',3),
-            ('50 / 2 * 2 + 10',60),
-            ('5 / 2',2),
+            ('parsearAentero((2 + 7) / 3)',3),
+            ('parsearAentero(50 / 2 * 2 + 10)',60),
         ]
         for source, expected in test:
             evaluated = self._evaluate_test(source)
             self._test_integer_object(evaluated, expected)
+
+    def test_float_evaluator(self)-> None:
+        test: List[Tuple[str, float]] = [
+            ('1.3324',1.3324),
+            ('10.978',10.978),
+            ('-5.134',-5.134),
+            ('-10.112',-10.112),
+            ('5+5.34',10.34),
+            ('5-10.1',-5.1),
+            ('2.6*3.9*4.1',41.574),
+            ('5 / 2',2.5),
+        ]
+        for source, expected in test:
+            print(source)
+            evaluated = self._evaluate_test(source)
+            self._test_float_object(evaluated, expected)
 
     def test_boolean_evaluation(self)-> None:
         test: List[Tuple[str,bool]] = [
@@ -48,6 +64,15 @@ class EvaluatorTest(TestCase):
             ('1 == 1', True),
             ('1 != 1', False),
             ('1 != 2', True),
+
+            ('1.99 < 2', True),
+            ('1.8 > 1.85', False),
+            ('1.99 < 1.98', False),
+            ('1.777 > 1.78', False),
+            ('1.565 == 1.56500', True),
+            ('21.3 != 21.3', False),
+            ('111.656 != 111.654', True),
+
             ('verdadero == verdadero', True),
             ('falso == falso', True),
             ('verdadero == falso', False),
@@ -60,6 +85,7 @@ class EvaluatorTest(TestCase):
         ]
 
         for source, expected in test:
+            print(source)
             evaluated = self._evaluate_test(source)
             self._test_boolean_object(evaluated,expected)
 
@@ -358,6 +384,12 @@ class EvaluatorTest(TestCase):
         self.assertIsInstance(evaluated, Integer)
 
         evaluated = cast(Integer, evaluated)
+        self.assertEquals(evaluated.value, expected)
+
+    def _test_float_object(self, evaluated: Object, expected: float) -> None:
+        self.assertIsInstance(evaluated, Float)
+
+        evaluated = cast(Float, evaluated)
         self.assertEquals(evaluated.value, expected)
 
     def _test_string_object(self, evaluated:Object, expected:str) -> None:

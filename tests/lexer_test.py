@@ -62,15 +62,22 @@ class LexerTest(TestCase):
         self.assertEquals(self._get_tokens(source,len(source)), expected_tokens)
     
     def test_assignment(self) -> None:
-        source: str = 'variable cinco = 5;'
+        source: str = '''variable cinco = 5;
+        variable cinco = 5.0;'''
         expected_tokens: List[Token] = [
             Token(TokenType.LET, 'variable'),
             Token(TokenType.IDENT, 'cinco'),
             Token(TokenType.ASSIGN, '='),
             Token(TokenType.INT, '5'),
             Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LET, 'variable'),
+            Token(TokenType.IDENT, 'cinco'),
+            Token(TokenType.ASSIGN, '='),
+            Token(TokenType.FLOAT, '5.0'),
+            Token(TokenType.SEMICOLON, ';'),
         ]
-        self.assertEquals(self._get_tokens(source,5), expected_tokens)
+        self.assertEquals(self._get_tokens(source,10), expected_tokens)
     
     def test_function_declaration(self) -> None:
         source: str = '''variable suma = procedimiento(x,y){
@@ -181,6 +188,50 @@ class LexerTest(TestCase):
             Token(TokenType.GEQT, '>='),
             Token(TokenType.LESS, '-'),
             Token(TokenType.INT, '90'),
+            Token(TokenType.SEMICOLON, ';'),
+        ]
+        self.assertEquals(self._get_tokens(source,26), expected_tokens)
+
+    def test_two_character_operator_float(self) -> None:
+        source: str = '''
+            10.6 == 11.9;
+            10.7 != 19;
+            11.54 >= 12;
+            222.2 <= 212.001;
+            33.5432 >= 33.1;
+            -90.95344 >= -90.9999;
+        '''
+        expected_tokens: List[Token] = [
+            Token(TokenType.FLOAT, '10.6'),
+            Token(TokenType.EQ, '=='),
+            Token(TokenType.FLOAT, '11.9'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.FLOAT, '10.7'),
+            Token(TokenType.NOT_EQ, '!='),
+            Token(TokenType.INT, '19'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.FLOAT, '11.54'),
+            Token(TokenType.GEQT, '>='),
+            Token(TokenType.INT, '12'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.FLOAT, '222.2'),
+            Token(TokenType.LEQT, '<='),
+            Token(TokenType.FLOAT, '212.001'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.FLOAT, '33.5432'),
+            Token(TokenType.GEQT, '>='),
+            Token(TokenType.FLOAT, '33.1'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.FLOAT, '90.95344'),
+            Token(TokenType.GEQT, '>='),
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.FLOAT, '90.9999'),
             Token(TokenType.SEMICOLON, ';'),
         ]
         self.assertEquals(self._get_tokens(source,26), expected_tokens)

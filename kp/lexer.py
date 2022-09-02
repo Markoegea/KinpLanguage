@@ -1,4 +1,5 @@
 from re import match
+from typing import Optional
 
 from kp.token import(
     lookup_token_type,
@@ -93,8 +94,8 @@ class Lexer:
             return Token(token_type, literal)
 
         elif self._is_number(self._character):
-            literal = self._read_number()
-            return Token(TokenType.INT, literal)
+            token = self._read_number()
+            return token
 
         elif match(r'^"$', self._character):
             literal = self._read_string()
@@ -114,6 +115,9 @@ class Lexer:
     #Funcion para saber si estoy frente a un numero
     def _is_number(self, character:str) -> bool:
         return bool(match(r'^\d$', character))
+
+    def _is_float_number(self, character:str) -> bool:
+        return bool(match(r'^\.$', character))
     
     #Funcion la cual me regresa un token de dos caracteres
     def _make_two_character_token(self, token_type: TokenType)-> Token:
@@ -142,13 +146,25 @@ class Lexer:
         return self._source[initial_position:self._position]
 
     #Funcion que es llamada cuando se detecta un numero, para devolver toda el numero
-    def _read_number(self) -> str:
+    def _read_number(self) -> Token:
         initial_position = self._position
 
         while self._is_number(self._character):
             self._read_character()
 
-        return self._source[initial_position:self._position]
+        if self._is_float_number(self._character):
+            self._read_character()
+            number = self._source[initial_position:self._read_float_number()]
+            return Token(TokenType.FLOAT, number)
+        else:
+            number = self._source[initial_position:self._position]
+            return Token(TokenType.INT, number)
+
+    def _read_float_number(self) -> int:
+        while self._is_number(self._character):
+            self._read_character()
+        return self._position
+
 
     def _read_string(self) -> str:
         self._read_character()

@@ -7,6 +7,7 @@ from kp.object import (
     String,
     Integer,
     Builtin,
+    Float,
     Null,
 )
 _WRONG_NUMBER_OF_ARGS= 'Poseemos un problema, numero incorrecto de argumentos, se requeria {}, pero se recibio {}'
@@ -58,6 +59,13 @@ def parsearAentero(*args:Object) -> Object:
             return Integer(1)
         else:
             return Integer(0)
+    elif type(args[0]) == Float:
+        dataFloat = cast(Float, args[0])
+        valueFloat = dataFloat.value
+        try:
+            return Integer(int(valueFloat))
+        except:
+            return Error(_THAT_IS_NOT_A_NUMBER.format(valueString))
     else:
         return Error(_UNSUPPORTED_ARGUMENT_TYPE.format(args[0].type().name))
 

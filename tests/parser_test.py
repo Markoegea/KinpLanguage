@@ -8,6 +8,7 @@ from kp.token import(
 from kp.ast import (
     If,
     Call,
+    Float,
     Block,
     Infix,
     Prefix,
@@ -121,15 +122,27 @@ class ParserTest(TestCase):
         assert expression_statement.expression is not None
         self._test_literal_expression(expression_statement.expression,5)
 
-    def test_prefix_expression(self) -> None:
-        source: str = '!5; -15; !verdadero;'
+    def test_float_expressions(self)-> None:
+        source: str = '89.576776575;'
         lexer: Lexer = Lexer(source)
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
 
-        self._test_program_statements(parser,program,3)
+        self._test_program_statements(parser,program)
 
-        for statement,(expected_operator, expected_value) in zip(program.statements,[('!',5),('-',15),('!', True)]):
+        expression_statement = cast(ExpressionStatement, program.statements[0])
+        assert expression_statement.expression is not None
+        self._test_literal_expression(expression_statement.expression,89.576776575)
+
+    def test_prefix_expression(self) -> None:
+        source: str = '!5; -15; !verdadero; -156.36;'
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser,program,4)
+
+        for statement,(expected_operator, expected_value) in zip(program.statements,[('!',5),('-',15),('!', True),('-', 156.36)]):
             statement = cast(ExpressionStatement,statement)
             self.assertIsInstance(statement.expression, Prefix)
 
@@ -173,6 +186,42 @@ class ParserTest(TestCase):
             (5,'!=',5),
             (True, '==', True),
             (True, '!=', False),
+        ]
+        for statement, (expected_left, expected_operator, expected_right) in zip(program.statements,expected_operators_and_values):
+            statement = cast(ExpressionStatement, statement)
+            assert statement.expression is not None
+            self.assertIsInstance(statement.expression, Infix)
+            self._test_infix_expression(statement.expression,expected_left,expected_operator,expected_right)
+
+    def test_infix_float_expressions(self)-> None:
+        source: str = '''
+        5.1 + 5.2;
+        5.3 - 5.4;
+        5.45 * 5.52;
+        5.64 / 5.73;
+        5.9 > 5.86;
+        5.11 >= 5.22;
+        5.33 < 5.44;
+        5.55 <= 5.66;
+        5.77 == 5.88;
+        5.1 != 5.1;
+        '''
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser,program,expected_statements_count=10)
+        expected_operators_and_values: List[Tuple[Any,str,Any]] = [
+            (5.1,'+', 5.2),
+            (5.3,'-',5.4),
+            (5.45,'*',5.52),
+            (5.64,'/',5.73),
+            (5.90,'>',5.86),
+            (5.11,'>=',5.22),
+            (5.33,'<',5.44),
+            (5.55,'<=',5.66),
+            (5.77,'==',5.88),
+            (5.1,'!=',5.1),
         ]
         for statement, (expected_left, expected_operator, expected_right) in zip(program.statements,expected_operators_and_values):
             statement = cast(ExpressionStatement, statement)
@@ -334,7 +383,7 @@ class ParserTest(TestCase):
                 self._test_literal_expression(function.parameters[idx], param)
 
     def test_call_expression(self) -> None:
-        source: str = 'suma(1, 2 * 3, 4 + 5);'
+        source: str = 'suma(1, 2 * 3, 4 + 5,8.21);'
         lexer: Lexer = Lexer(source)
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
@@ -348,10 +397,11 @@ class ParserTest(TestCase):
 
         #Test arguments
         assert call.arguments is not None
-        self.assertEquals(len(call.arguments), 3)
+        self.assertEquals(len(call.arguments), 4)
         self._test_literal_expression(call.arguments[0], 1)
         self._test_infix_expression(call.arguments[1], 2, '*', 3)
         self._test_infix_expression(call.arguments[2], 4, '+', 5)
+        self._test_literal_expression(call.arguments[3], 8.21)
 
     def test_string_literal_expression(self) -> None:
         source: str = '"hello world!"'
@@ -399,6 +449,8 @@ class ParserTest(TestCase):
             self._test_identifier(expression,expected_value)
         elif value_type == int:
             self._test_integer(expression,expected_value)
+        elif value_type == float:
+            self._test_float(expression, expected_value)
         elif value_type == bool:
             self._test_boolean(expression,expected_value)
         else:
@@ -432,5 +484,14 @@ class ParserTest(TestCase):
         integer = cast(Integer, expression)
         self.assertEquals(integer.value, expected_value)
         self.assertEquals(integer.token.literal, str(expected_value))
+
+    def _test_float(self,
+                        expression: Expression,
+                        expected_value:float)-> None:
+        self.assertIsInstance(expression,Float)
+
+        floating = cast(Float, expression)
+        self.assertEquals(floating.value, expected_value)
+        self.assertEquals(floating.token.literal, str(expected_value))
 
         

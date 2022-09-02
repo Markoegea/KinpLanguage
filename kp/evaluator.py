@@ -4,6 +4,7 @@ import kp.ast as ast
 from kp.builtins import BUILTINS
 from kp.object import (
     Null,
+    Float,
     Error,
     Object,
     Return,
@@ -59,6 +60,12 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
 
         assert node.value is not None
         return Integer(node.value)
+
+    elif node_type == ast.Float:
+        node = cast(ast.Float, node)
+
+        assert node.value is not None
+        return Float(node.value)
 
     elif node_type == ast.Boolean:
         node = cast(ast.Boolean, node)
@@ -242,9 +249,12 @@ def _is_truthy(obj: Object) -> bool:
         return False
 
 def _evaluate_infix_expression(operator: str, left: Object, right: Object) -> Object:
-
+    
+    #TODO Mejorar los condicionales
     if left.type() == ObjecType.INTEGER and right.type() == ObjecType.INTEGER:
         return _evaluate_integer_infix_expression(operator, left, right)
+    if (left.type() == ObjecType.FLOAT or left.type() == ObjecType.INTEGER) and (right.type() == ObjecType.FLOAT or right.type() == ObjecType.INTEGER):
+        return _evaluate_float_infix_expression(operator, left, right)
     elif left.type() == ObjecType.STRING and right.type() == ObjecType.STRING:
         return _evaluate_string_infix_expression(operator, left, right)
     elif (left.type() == ObjecType.STRING or right.type() == ObjecType.STRING) and operator == '+':
@@ -262,7 +272,7 @@ def _evaluate_integer_infix_expression(operator: str, left:Object, right: Object
 
     left_value: int = cast(Integer, left).value
     right_value: int = cast(Integer, right).value
-
+   
     if operator == '+':
         return Integer(left_value + right_value)
     elif operator == '-':
@@ -270,7 +280,7 @@ def _evaluate_integer_infix_expression(operator: str, left:Object, right: Object
     elif operator == '*':
         return Integer(left_value * right_value)
     elif operator == '/':
-        return Integer(left_value // right_value)
+        return Float(left_value / right_value)
     elif operator == '<':
         return _to_boolean_object(left_value < right_value)
     elif operator == '>':
@@ -285,6 +295,35 @@ def _evaluate_integer_infix_expression(operator: str, left:Object, right: Object
         return _to_boolean_object(left_value != right_value)
     else:
         return _new_error(_UNKNOWN_INFIX_OPERATION, [left.type().name,operator, right.type().name])
+
+def _evaluate_float_infix_expression(operator: str, left:Object, right: Object) -> Object:
+        
+    left_value: float = float(left.inspect())
+    right_value: float = float(right.inspect())
+   
+    if operator == '+':
+        return Float(left_value + right_value)
+    elif operator == '-':
+        return Float(left_value - right_value)
+    elif operator == '*':
+        return Float(left_value * right_value)
+    elif operator == '/':
+        return Float(left_value / right_value)
+    elif operator == '<':
+        return _to_boolean_object(left_value < right_value)
+    elif operator == '>':
+        return _to_boolean_object(left_value > right_value)
+    elif operator == '<=':
+        return _to_boolean_object(left_value <= right_value)
+    elif operator == '>=':
+        return _to_boolean_object(left_value >= right_value)
+    elif operator == '==':
+        return _to_boolean_object(left_value == right_value)
+    elif operator == '!=':
+        return _to_boolean_object(left_value != right_value)
+    else:
+        return _new_error(_UNKNOWN_INFIX_OPERATION, [left.type().name,operator, right.type().name])
+
 
 def _evaluate_string_infix_expression(operator: str, left: Object, right: Object) -> Object:
 
@@ -328,12 +367,15 @@ def _evaluate_bang_operator_expression(right: Object) -> Object:
         return FALSE
 
 def _evaluate_minus_operator_expression(right: Object) ->  Object:
-    if type(right) != Integer:
+    if right.type() == ObjecType.INTEGER:
+        right = cast(Integer, right)
+        return Integer(-right.value)
+    elif right.type() == ObjecType.FLOAT:
+        right = cast(Float, right)
+        return Float(-right.value)
+    else:
         return _new_error(_UNKNOWN_PREFIX_OPERATION, ['-', right.type().name])
-    
-    right = cast(Integer, right)
 
-    return Integer(-right.value)
 
 def _to_boolean_object(value: bool)->Boolean:
     return TRUE if value else FALSE
