@@ -45,6 +45,9 @@ class Lexer:
 
         elif match(r'^\+$', self._character):
             token = Token(TokenType.PLUS, self._character)
+        
+        elif match(r'^\%$', self._character):
+            token = Token(TokenType.MOD, self._character)
 
         elif match(r'^\*$', self._character):
             if self._peek_character() == '*':

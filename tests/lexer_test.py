@@ -282,3 +282,41 @@ class LexerTest(TestCase):
             Token(TokenType.SEMICOLON, ';'),
         ]
         self.assertEquals(self._get_tokens(source,20), expected_tokens)
+
+    def test_module_operation(self) -> None:
+        source: str = '''
+        5 % 5;
+        30 % 2;
+        25 % 9;
+        -90 % 9;
+        24.75 % -32;
+        '''
+        expected_tokens: List[Token] = [
+            Token(TokenType.INT, '5'),
+            Token(TokenType.MOD, '%'),
+            Token(TokenType.INT, '5'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.INT, '30'),
+            Token(TokenType.MOD, '%'),
+            Token(TokenType.INT, '2'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.INT, '25'),
+            Token(TokenType.MOD, '%'),
+            Token(TokenType.INT, '9'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '90'),
+            Token(TokenType.MOD, '%'),
+            Token(TokenType.INT, '9'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.FLOAT, '24.75'),
+            Token(TokenType.MOD, '%'),
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '32'),
+            Token(TokenType.SEMICOLON, ';'),
+        ]
+        self.assertEquals(self._get_tokens(source,22), expected_tokens)

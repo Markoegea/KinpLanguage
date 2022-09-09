@@ -58,6 +58,7 @@ PRECEDENCES: Dict[TokenType,Precedence] = {
     TokenType.LESS: Precedence.SUM,
     TokenType.DIVISION: Precedence.PRODUCT,
     TokenType.MULTIPLICATION: Precedence.PRODUCT,
+    TokenType.MOD: Precedence.PRODUCT,
     TokenType.LPAREN: Precedence.CALL,
     TokenType.RTP: Precedence.RAISE,
 }
@@ -431,6 +432,7 @@ class Parser:
             TokenType.LESS: self._parse_infix_expression,
             TokenType.DIVISION: self._parse_infix_expression,
             TokenType.MULTIPLICATION: self._parse_infix_expression,
+            TokenType.MOD: self._parse_infix_expression,
             TokenType.EQ: self._parse_infix_expression,
             TokenType.NOT_EQ: self._parse_infix_expression,
             TokenType.LT: self._parse_infix_expression,

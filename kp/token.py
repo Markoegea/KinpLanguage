@@ -26,6 +26,7 @@ class TokenType(Enum):
     GT = auto(),
     GEQT = auto(),
     MULTIPLICATION = auto(),
+    MOD = auto(),
     NEGATION = auto(),
     NOT_EQ = auto(),
     PLUS = auto(),

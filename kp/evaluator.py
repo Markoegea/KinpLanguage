@@ -285,6 +285,8 @@ def _evaluate_integer_infix_expression(operator: str, left:Object, right: Object
         if right_value < 0:
             return Float(left_value ** right_value)
         return Integer(left_value ** right_value)
+    elif operator == '%':
+        return Integer(left_value % right_value)
     elif operator == '<':
         return _to_boolean_object(left_value < right_value)
     elif operator == '>':
@@ -315,6 +317,8 @@ def _evaluate_float_infix_expression(operator: str, left:Object, right: Object) 
         return Float(left_value / right_value)
     elif operator == '**':
         return Float(left_value ** right_value)
+    elif operator == '%':
+        return Float(left_value % right_value)
     elif operator == '<':
         return _to_boolean_object(left_value < right_value)
     elif operator == '>':

@@ -72,6 +72,23 @@ class EvaluatorTest(TestCase):
             elif type(expected) == int:
                self._test_integer_object(evaluated, expected) 
 
+    def test_module_evaluator(self)-> None:
+        test: List[Tuple[str, Any]] = [
+            ('5 %5',0),
+            ('55.66 % 15.55',9.009999999999994),
+            ('32 % 3',2),
+            ('0.111 % 0.2',0.111),
+            ('90 % 9',0),
+            ('24.75 % 32',24.75),
+        ]
+        for source, expected in test:
+            print(source)
+            evaluated = self._evaluate_test(source)
+            if type(expected) == float:
+                self._test_float_object(evaluated, expected)
+            elif type(expected) == int:
+               self._test_integer_object(evaluated, expected) 
+
     def test_boolean_evaluation(self)-> None:
         test: List[Tuple[str,bool]] = [
             ('verdadero', True),
