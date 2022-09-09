@@ -53,6 +53,25 @@ class EvaluatorTest(TestCase):
             evaluated = self._evaluate_test(source)
             self._test_float_object(evaluated, expected)
 
+    def test_raise_to_n_power(self)-> None:
+        test: List[Tuple[str, Any]] = [
+            ('2 **2',4),
+            ('2 ** 20',1048576),
+            ('-7 ** 5',-16807),
+            ('4.38 ** 2',19.1844),
+            ('3.7 ** 9.5',249986.39782813037),
+            ('7 ** -2',0.02040816326530612),
+            ('20 + 2 ** 4 / 2',28.0),
+            ('5**2 + 20 *5 + 30',155),
+        ]
+        for source, expected in test:
+            print(source)
+            evaluated = self._evaluate_test(source)
+            if type(expected) == float:
+                self._test_float_object(evaluated, expected)
+            elif type(expected) == int:
+               self._test_integer_object(evaluated, expected) 
+
     def test_boolean_evaluation(self)-> None:
         test: List[Tuple[str,bool]] = [
             ('verdadero', True),

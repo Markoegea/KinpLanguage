@@ -229,6 +229,30 @@ class ParserTest(TestCase):
             self.assertIsInstance(statement.expression, Infix)
             self._test_infix_expression(statement.expression,expected_left,expected_operator,expected_right)
 
+    def test_infix_raised_to_n_power(self)-> None:
+        source: str = '''
+        5 ** 5;
+        15.55 ** 55.66;
+        67 ** 89;
+        0.111 ** 0.2;
+        '''
+        lexer: Lexer = Lexer(source)
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser,program,expected_statements_count=4)
+        expected_operators_and_values: List[Tuple[Any,str,Any]] = [
+            (5,'**', 5),
+            (15.55,'**',55.66),
+            (67,'**',89),
+            (0.111,'**',0.2),
+        ]
+        for statement, (expected_left, expected_operator, expected_right) in zip(program.statements,expected_operators_and_values):
+            statement = cast(ExpressionStatement, statement)
+            assert statement.expression is not None
+            self.assertIsInstance(statement.expression, Infix)
+            self._test_infix_expression(statement.expression,expected_left,expected_operator,expected_right)
+
     def test_boolean_expression(self)->None:
         source: str = '''
         verdadero; falso;

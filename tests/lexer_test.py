@@ -249,3 +249,36 @@ class LexerTest(TestCase):
         ]
         self.assertEquals(self._get_tokens(source,4),expected_tokens)
 
+    def test_raised_to_n_power(self) -> None:
+        source: str = '''
+            2 ** 4;
+            -23 ** 9;
+            -10 ** -10;
+            -4.5 ** 2.5;
+        '''
+        expected_tokens: List[Token] = [
+            Token(TokenType.INT, '2'),
+            Token(TokenType.RTP, '**'),
+            Token(TokenType.INT, '4'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '23'),
+            Token(TokenType.RTP, '**'),
+            Token(TokenType.INT, '9'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '10'),
+            Token(TokenType.RTP, '**'),
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.INT, '10'),
+            Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.LESS, '-'),
+            Token(TokenType.FLOAT, '4.5'),
+            Token(TokenType.RTP, '**'),
+            Token(TokenType.FLOAT, '2.5'),
+            Token(TokenType.SEMICOLON, ';'),
+        ]
+        self.assertEquals(self._get_tokens(source,20), expected_tokens)

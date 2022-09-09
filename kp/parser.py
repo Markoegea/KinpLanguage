@@ -42,8 +42,9 @@ class Precedence(IntEnum):
     LESSGREATER = 3
     SUM = 4
     PRODUCT = 5
-    PREFIX = 6
-    CALL = 7
+    RAISE = 6
+    PREFIX = 7
+    CALL = 8
 
 PRECEDENCES: Dict[TokenType,Precedence] = {
     TokenType.ASSIGN: Precedence.EQUALS,
@@ -58,7 +59,7 @@ PRECEDENCES: Dict[TokenType,Precedence] = {
     TokenType.DIVISION: Precedence.PRODUCT,
     TokenType.MULTIPLICATION: Precedence.PRODUCT,
     TokenType.LPAREN: Precedence.CALL,
-
+    TokenType.RTP: Precedence.RAISE,
 }
 
 #Clase parser, que se encarga de parsear todos los token que manda el lexer
@@ -436,6 +437,7 @@ class Parser:
             TokenType.LEQT: self._parse_infix_expression,
             TokenType.GT: self._parse_infix_expression,
             TokenType.GEQT: self._parse_infix_expression,
+            TokenType.RTP: self._parse_infix_expression,
             TokenType.LPAREN: self._parse_call,
             TokenType.ASSIGN: self._parse_infix_expression,
         }

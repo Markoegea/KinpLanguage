@@ -1,0 +1,6 @@
+variable potenciacion = procedimiento(x,y){
+    regresa x ** y;
+}
+
+variable potencia = potenciacion(7,-2);
+imprimir(potencia);

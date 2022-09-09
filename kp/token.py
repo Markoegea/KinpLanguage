@@ -31,6 +31,7 @@ class TokenType(Enum):
     PLUS = auto(),
     RBRACE = auto(),
     RETURN = auto(),
+    RTP = auto(),
     RPAREN = auto(),
     SEMICOLON = auto(),
     STRING = auto()

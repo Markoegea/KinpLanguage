@@ -1,2 +1,2 @@
-imprimir("Hello");
-imprimir("World!!!!");
+imprimir("Hola");
+imprimir("Mundo!!!!");
