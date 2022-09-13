@@ -79,7 +79,7 @@ class LexerTest(TestCase):
         ]
         self.assertEquals(self._get_tokens(source,10), expected_tokens)
     
-    def test_function_declaration(self) -> None:
+    def test_lamda_declaration(self) -> None:
         source: str = '''variable suma = procedimiento(x,y){
             x+y;
         };'''
@@ -87,7 +87,7 @@ class LexerTest(TestCase):
             Token(TokenType.LET, 'variable'),
             Token(TokenType.IDENT, 'suma'),
             Token(TokenType.ASSIGN, '='),
-            Token(TokenType.FUNCTION, 'procedimiento'),
+            Token(TokenType.LAMBDA, 'procedimiento'),
             Token(TokenType.LPAREN, '('),
             Token(TokenType.IDENT, 'x'),
             Token(TokenType.COMMA, ','),
@@ -102,6 +102,27 @@ class LexerTest(TestCase):
             Token(TokenType.SEMICOLON, ';'),
         ] 
         self.assertEquals(self._get_tokens(source,16), expected_tokens)
+
+    def test_function_declaration(self) -> None:
+        source: str = '''metodo suma(x,y){
+            x+y;
+        }'''
+        expected_tokens: List[Token] = [
+            Token(TokenType.FUNCTION, 'metodo'),
+            Token(TokenType.IDENT, 'suma'),
+            Token(TokenType.LPAREN, '('),
+            Token(TokenType.IDENT, 'x'),
+            Token(TokenType.COMMA, ','),
+            Token(TokenType.IDENT, 'y'),
+            Token(TokenType.RPAREN, ')'),
+            Token(TokenType.LBRACE, '{'),
+            Token(TokenType.IDENT, 'x'),
+            Token(TokenType.PLUS, '+'),
+            Token(TokenType.IDENT, 'y'),
+            Token(TokenType.SEMICOLON, ';'),
+            Token(TokenType.RBRACE, '}'),
+        ] 
+        self.assertEquals(self._get_tokens(source,13), expected_tokens)
 
     def test_function_call(self) -> None:
         source : str = 'variable resultado = suma(dos,tres);'

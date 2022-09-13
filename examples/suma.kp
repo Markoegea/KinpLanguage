@@ -1,6 +1,6 @@
-variable suma_numeros = procedimiento(x,y){
+metodo suma_numeros(x,y){
     variable suma = x + y;
     regresa suma;
-};
+}
 
-imprimir(suma_numeros(52,9));
+imprimir(suma_numeros(57,12));

@@ -8,6 +8,7 @@ from kp.ast import (
     Float,
     Block,
     Infix,
+    Lambda,
     Prefix,
     Boolean,
     Program,
@@ -202,10 +203,33 @@ class Parser:
             return None
         return arguments
 
-
     def _parse_function(self) -> Optional[Function]:
         assert self._current_token is not None
         function = Function(token=self._current_token)
+
+        if not self._expected_token(Token(TokenType.IDENT,'nombre metodo')):
+            return None
+
+        function.name = self._parse_identifier()
+
+        if not self._expected_token(Token(TokenType.LPAREN,'(')):
+            return None
+
+        function.parameters = self._parse_function_parameters()
+
+        if not self._expected_token(Token(TokenType.LBRACE,'{')):
+            return None
+        
+        function.body = self._parse_block()
+
+        if not self._current_correct_token(Token(TokenType.RBRACE,'}')):
+            return None
+
+        return function
+
+    def _parse_lambda(self) -> Optional[Lambda]:
+        assert self._current_token is not None
+        function = Lambda(token=self._current_token)
 
         if not self._expected_token(Token(TokenType.LPAREN,'(')):
             return None
@@ -450,6 +474,7 @@ class Parser:
             TokenType.FALSE: self._parse_boolean,
             TokenType.FLOAT: self._parse_float,
             TokenType.FUNCTION: self._parse_function,
+            TokenType.LAMBDA: self._parse_lambda,
             TokenType.IDENT : self._parse_identifier,
             TokenType.IF: self._parse_if,
             TokenType.INT: self._parse_integer,

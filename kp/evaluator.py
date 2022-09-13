@@ -118,7 +118,7 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
         
         assert node.value is not None
         value = evaluate(node.value, env)
-        if value == Error:
+        if type(value) == Error:
             return value
 
         assert node.name is not None
@@ -129,19 +129,31 @@ def evaluate(node: ast.ASTNode, env: Environment) -> Optional[Object]:
         return _evaluate_identifier(node, env)
     elif node_type == ast.Function:
         node = cast(ast.Function, node)
+        assert node.body is not None
+        function = Function(node.parameters,node.body,env)
+        if type(function) == Error:
+            return function
+
+        assert node.name is not None
+        env[node.name.value] = function
+        return function
+    elif node_type == ast.Lambda:
+        node = cast(ast.Lambda, node)
 
         assert node.body is not None
         return Function(node.parameters,node.body,env)
     elif node_type == ast.Call:
         node = cast(ast.Call, node)
 
-        function = evaluate(node.function, env)
+        call_function = evaluate(node.function, env)
+        if type(call_function) == Error:
+            return call_function
 
         assert node.arguments is not None
         args = _evaluate_expression(node.arguments,env)
 
-        assert function is not None
-        return _apply_function(function, args)
+        assert call_function is not None
+        return _apply_function(call_function, args)
     elif node_type == ast.StringLiteral:
         node = cast(ast.StringLiteral, node)
 

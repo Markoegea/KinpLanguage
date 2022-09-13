@@ -1,9 +1,9 @@
-variable factorial = procedimiento(n){
+metodo factorial(n){
     si (n == 1){
         regresa 1;
     }
     regresa n * factorial(n-1);
-};
+}
 
 variable resultado = parsearAentero(recibir("Dame un numero, para saber su factorial: "));
 resultado = factorial(resultado)

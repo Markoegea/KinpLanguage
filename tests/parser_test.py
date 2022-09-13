@@ -12,6 +12,7 @@ from kp.ast import (
     Block,
     Infix,
     Prefix,
+    Lambda,
     Boolean,
     Program,
     Integer,
@@ -389,7 +390,7 @@ class ParserTest(TestCase):
             self._test_identifier(alternative_statement.expression, 'z')
 
     def test_function_literal(self) -> None:
-        source: str = 'procedimiento(x,y) { x + y}'
+        source: str = 'metodo suma(x,y) { x + y}'
         lexer: Lexer = Lexer(source) 
         parser: Parser = Parser(lexer)
         program: Program = parser.parse_program()
@@ -398,8 +399,36 @@ class ParserTest(TestCase):
 
         # Test correct node type
         function_literal = cast(Function, cast(ExpressionStatement, program.statements[0]).expression)
-
         self.assertIsInstance(function_literal, Function)
+        #Test correct name
+        self.assertIsInstance(function_literal.name, Identifier)
+        function_name = cast(Identifier, function_literal.name)
+        self.assertEquals(function_name.value, "suma")
+        self.assertEquals(function_name.token.literal, "suma")
+        #Test params
+        self.assertEquals(len(function_literal.parameters), 2)
+        self._test_literal_expression(function_literal.parameters[0], 'x')
+        self._test_literal_expression(function_literal.parameters[1], 'y')
+
+        #Test body
+        assert function_literal.body is not None
+        self.assertEquals(len(function_literal.body.statements),1)
+        body = cast(ExpressionStatement, function_literal.body.statements[0])
+        assert body.expression is not None
+        self._test_infix_expression(body.expression, 'x', '+', 'y')
+
+    def test_lambda_literal(self) -> None:
+        source: str = 'procedimiento(x,y) { x + y}'
+        lexer: Lexer = Lexer(source) 
+        parser: Parser = Parser(lexer)
+        program: Program = parser.parse_program()
+
+        self._test_program_statements(parser, program)
+
+        # Test correct node type
+        function_literal = cast(Lambda, cast(ExpressionStatement, program.statements[0]).expression)
+
+        self.assertIsInstance(function_literal, Lambda)
 
         #Test params
         self.assertEquals(len(function_literal.parameters), 2)
@@ -428,7 +457,7 @@ class ParserTest(TestCase):
             parser: Parser = Parser(lexer)
             program: Program = parser.parse_program()
 
-            function = cast(Function, cast(ExpressionStatement,program.statements[0]).expression)
+            function = cast(Lambda, cast(ExpressionStatement,program.statements[0]).expression)
             self.assertEquals(len(function.parameters), len(test['expected_params']))
 
             for idx, param in enumerate(test['expected_params']):

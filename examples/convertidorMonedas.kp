@@ -2,8 +2,8 @@ variable menu = " Bienvenido al conversos de monedas, que deseas?
 🥇De dolares a pesos [1] o 
 de pesos a dolares [2]?: ";
 
-variable conversor = procedimiento(eleccion){
-    variable valor_dolar = 4492.0;
+metodo conversor(eleccion){
+    variable valor_dolar = 4361.25;
     variable moneda_a_convertir;
     variable moneda;
 
@@ -27,7 +27,7 @@ variable conversor = procedimiento(eleccion){
 
     imprimir("Enserio? escoge una opcion correcta");
     regresa;
-};
+}
 
 variable eleccion = parsearAentero(recibir(menu));
 conversor(eleccion);

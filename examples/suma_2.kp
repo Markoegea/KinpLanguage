@@ -1,8 +1,8 @@
-variable suma_numeros = procedimiento(numero_1,numero_2){
+metodo suma_numeros(numero_1,numero_2){
 
     variable suma = numero_1 + numero_2;
     regresa "La suma de " + numero_1 +" + " + numero_2 + " es igual a " + suma;
-};
+}
 
 variable numero_1 =  parsearAentero(recibir("Dame un numero: "));
 

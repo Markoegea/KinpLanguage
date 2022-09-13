@@ -299,6 +299,25 @@ class EvaluatorTest(TestCase):
             suma(5 + 5, suma(10,10));
             ''',30),
             ('procedimiento(x){x;} (5)', 5),
+            ('''
+            metodo potencia(x, y){
+                regresa x ** y;
+            };
+            potencia(5,5);
+            ''',3125),
+            ('''
+            metodo potencia(x, y){
+                regresa x ** y;
+            };
+            potencia(2,potencia(2,4));
+            ''',65536),
+            ('''
+            metodo potencia(x, y){
+                regresa x ** y;
+            };
+            variable numero = potencia(2,potencia(2,3));
+            numero;
+            ''',256),
         ]
         for source, expected in test:
             evaluated = self._evaluate_test(source)

@@ -1,4 +1,4 @@
-variable potenciacion = procedimiento(x,y){
+metodo potenciacion(x,y){
     regresa x ** y;
 }
 

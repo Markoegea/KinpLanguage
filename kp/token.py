@@ -17,6 +17,7 @@ class TokenType(Enum):
     IF = auto(),
     ILLEGAL = auto(),
     INT = auto(),
+    LAMBDA = auto(),
     LBRACE = auto(),
     LESS = auto(),
     LET = auto(),
@@ -50,7 +51,8 @@ class Token(NamedTuple):
 def lookup_token_type(literal:str) -> TokenType:
     keywords: Dict[str, TokenType] = {
         'falso': TokenType.FALSE,
-        'procedimiento': TokenType.FUNCTION,
+        'metodo': TokenType.FUNCTION,
+        'procedimiento': TokenType.LAMBDA,
         'regresa': TokenType.RETURN,
         'si' : TokenType.IF,
         'si_no': TokenType.ELSE,
