@@ -3,7 +3,7 @@ variable menu = " Bienvenido al conversos de monedas, que deseas?
 de pesos a dolares [2]?: ";
 
 metodo conversor(eleccion){
-    variable valor_dolar = 4361.25;
+    variable valor_dolar = 4438.51; 
     variable moneda_a_convertir;
     variable moneda;
 
@@ -14,19 +14,17 @@ metodo conversor(eleccion){
 
         imprimir("Tu tienes " + moneda_a_convertir +" " +moneda);
         regresa;
-    }
-
-    si (eleccion == 2){
+    } si_no si (eleccion == 2){
         moneda_a_convertir = parsearAentero(recibir("Cuantos pesos colombianos tienes?:"));
         moneda_a_convertir = moneda_a_convertir / valor_dolar;
         moneda = "Dolares";
 
         imprimir("Tu tienes " + moneda_a_convertir +" " +moneda);
         regresa;
+    } si_no{
+        imprimir("Enserio? escoge una opcion correcta");
+        regresa;
     }
-
-    imprimir("Enserio? escoge una opcion correcta");
-    regresa;
 }
 
 variable eleccion = parsearAentero(recibir(menu));

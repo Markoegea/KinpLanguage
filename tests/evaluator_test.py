@@ -155,6 +155,20 @@ class EvaluatorTest(TestCase):
             else:
                 self._test_null_object(evaluated)
 
+    def test_if_else_ifevaluation(self) -> None:
+        test: List[Tuple[str, Any]] = [
+            ('si (1 < 2) { 10; } si_no si (1>2){20;}', 10),
+            ('si (1 > 2) { 10; } si_no si (1<2){20;}', 20),
+            ('si (1 > 2) { 10; } si_no si (1==2){20;}', None),
+            ('si (1 > 2) { 10; } si_no si (1==2){20;} si_no {69;}', 69),
+        ]
+        for source, expected in test:
+            evaluated = self._evaluate_test(source)
+            if type(expected) == int:
+                self._test_integer_object(evaluated, expected)
+            else:
+                self._test_null_object(evaluated)
+
     def  test_return_evaluation(self) -> None:
         test: List[Tuple[str, int]] = [
             ('regresa 10;' , 10),

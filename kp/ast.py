@@ -1,5 +1,5 @@
 from abc import(ABC,abstractmethod)
-from typing import (List,Optional)
+from typing import (List,Optional,Union)
 from kp.token import Token
 
 #Clase abstracta que es la base para el resto de clases
@@ -144,7 +144,7 @@ class If(Expression):
                 token: Token,
                 condition: Optional[Expression]= None,
                 consecuence: Optional[Block] = None,
-                alternative: Optional[Block] = None) -> None:
+                alternative: Optional[Union[Block,Expression]] = None) -> None:
         super().__init__(token)
         self.condition = condition
         self.consecuence = consecuence

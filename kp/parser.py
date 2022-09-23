@@ -321,11 +321,16 @@ class Parser:
         assert self._peek_token is not None
         if self._peek_token.token_type == TokenType.ELSE:
             self._advance_tokens()
-            if not self._expected_token(Token(TokenType.LBRACE,'{')):
-                return None
-            if_expression.alternative = self._parse_block()
-            if not self._current_correct_token(Token(TokenType.RBRACE,'}')):
-                return None
+            assert self._peek_token is not None
+            if self._peek_token.token_type == TokenType.IF:
+               self._advance_tokens()
+               if_expression.alternative = self._parse_if()
+            else: 
+                if not self._expected_token(Token(TokenType.LBRACE,'{')):
+                    return None
+                if_expression.alternative = self._parse_block()
+                if not self._current_correct_token(Token(TokenType.RBRACE,'}')):
+                    return None
         return if_expression
 
     #Parsea el token actual como un tipo Integer

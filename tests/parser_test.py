@@ -375,19 +375,78 @@ class ParserTest(TestCase):
             self.assertIsInstance(if_expresion.consecuence, Block)
             self.assertEquals(len(if_expresion.consecuence.statements),1)
             
-            #TODO: Cuando sepa parsear expresiones
-            #consecuence_statement = cast(ReturnStatement, if_expresion.consecuence.statements[0])
-            #assert consecuence_statement.return_value is not None
-            #self._test_literal_expression(consecuence_statement.return_value, True)
+            consecuence_statement = cast(ReturnStatement, if_expresion.consecuence.statements[0])
+            assert consecuence_statement.return_value is not None
+            self._test_literal_expression(consecuence_statement.return_value, True)
 
             #Test alternative
             assert if_expresion.alternative is not None
             self.assertIsInstance(if_expresion.alternative, Block)
-            self.assertEquals(len(if_expresion.alternative.statements),1)
+            block_statement = cast(Block, if_expresion.alternative)
+            self.assertEquals(len(block_statement.statements),1)
             
-            alternative_statement = cast(ExpressionStatement, if_expresion.alternative.statements[0])
+            alternative_statement = cast(ExpressionStatement, block_statement.statements[0])
             assert alternative_statement.expression is not None
             self._test_identifier(alternative_statement.expression, 'z')
+
+    def test_if_else_if_expression(self) -> None:
+            source: str = '''
+            si (x == 5) { 
+                regresa verdadero; 
+            } si_no si (x > 5){
+                regresa x;
+            } si_no {
+                z;
+            }
+            '''
+            lexer: Lexer = Lexer(source) 
+            parser: Parser = Parser(lexer)
+            program: Program = parser.parse_program()
+            #print(str(program))
+            self._test_program_statements(parser,program,1)
+            if_expresion = cast(If, cast(ExpressionStatement, program.statements[0]).expression)
+            self.assertIsInstance(if_expresion, If)
+
+            #Test condition
+            assert if_expresion.condition is not None
+            self._test_infix_expression(if_expresion.condition, 'x','==', 5)
+
+            #Test consecuence
+            assert if_expresion.consecuence is not None
+            self.assertIsInstance(if_expresion.consecuence, Block)
+            self.assertEquals(len(if_expresion.consecuence.statements),1)
+            
+            consecuence_statement = cast(ReturnStatement, if_expresion.consecuence.statements[0])
+            assert consecuence_statement.return_value is not None
+            self._test_literal_expression(consecuence_statement.return_value, True)
+
+            #Test alternative
+            assert if_expresion.alternative is not None
+            self.assertIsInstance(if_expresion.alternative, If)
+            else_if = cast(If, if_expresion.alternative)
+
+            #Test condition
+            assert else_if.condition is not None
+            self._test_infix_expression(else_if.condition, 'x','>', 5)
+
+            #Test consecuence
+            assert else_if.consecuence is not None
+            self.assertIsInstance(else_if.consecuence, Block)
+            self.assertEquals(len(else_if.consecuence.statements),1)
+
+            consecuence_statement = cast(ReturnStatement, else_if.consecuence.statements[0])
+            assert consecuence_statement.return_value is not None
+            self._test_identifier(consecuence_statement.return_value,  'x')
+
+            #Test alternative
+            assert else_if.alternative is not None
+            self.assertIsInstance(else_if.alternative, Block)
+            alternative_statement = cast(Block, else_if.alternative)
+            self.assertEquals(len(alternative_statement.statements),1)
+            indetifier_statement = cast(ExpressionStatement, alternative_statement.statements[0])
+            assert indetifier_statement.expression is not None
+            self._test_identifier(indetifier_statement.expression, 'z')
+
 
     def test_function_literal(self) -> None:
         source: str = 'metodo suma(x,y) { x + y}'

@@ -168,6 +168,41 @@ class LexerTest(TestCase):
             Token(TokenType.RBRACE, '}'),
         ]
         self.assertEquals(self._get_tokens(source,17), expected_tokens)
+
+    def test_if_else_if(self) -> None:
+        source : str = '''
+        si (5 > 10) {
+            regresa verdadero;
+        } si_no  si (5 < 10){
+            regresa "5 es menor que 10";
+        }
+        '''
+        expected_tokens: List[Token] = [
+            Token(TokenType.IF, 'si'),
+            Token(TokenType.LPAREN, '('),
+            Token(TokenType.INT, '5'),
+            Token(TokenType.GT, '>'),
+            Token(TokenType.INT, '10'),
+            Token(TokenType.RPAREN, ')'),
+            Token(TokenType.LBRACE, '{'),
+            Token(TokenType.RETURN, 'regresa'),
+            Token(TokenType.TRUE, 'verdadero'),
+            Token(TokenType.SEMICOLON, ';'),
+            Token(TokenType.RBRACE, '}'),
+            Token(TokenType.ELSE, 'si_no'),
+            Token(TokenType.IF, 'si'),
+            Token(TokenType.LPAREN, '('),
+            Token(TokenType.INT, '5'),
+            Token(TokenType.LT, '<'),
+            Token(TokenType.INT, '10'),
+            Token(TokenType.RPAREN, ')'),
+            Token(TokenType.LBRACE, '{'),
+            Token(TokenType.RETURN, 'regresa'),
+            Token(TokenType.STRING, '5 es menor que 10'),
+            Token(TokenType.SEMICOLON, ';'),
+            Token(TokenType.RBRACE, '}'),
+        ]
+        self.assertEquals(self._get_tokens(source,23), expected_tokens)
     
     def test_two_character_operator(self) -> None:
         source: str = '''
