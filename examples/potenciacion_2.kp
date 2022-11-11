@@ -1,0 +1,12 @@
+variable menu = "Vamos a potenciar, dame un numero: ";
+variable menu_2 = "Listo, dame otro numero: ";
+
+metodo potenciacion(numero1, numero2){
+    variable potencia = numero1 ** numero2;
+    regresa potencia;
+}
+
+variable numero1 = parsearAentero(recibir(menu));
+variable numero2 = parsearAentero(recibir(menu_2));
+
+imprimir(potenciacion(numero1, numero2))

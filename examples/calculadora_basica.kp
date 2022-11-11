@@ -1,0 +1,29 @@
+variable menu = "Vamos a potenciar, dame el primer numero: ";
+variable menu_2 = "Que operacion quieres hacer: ";
+variable menu_3 = "Listo, dame el segundo numero: ";
+
+
+variable numero_1 = parsearAentero(recibir(menu));
+
+variable operacion = recibir(menu_2);
+
+variable numero_2 = parsearAentero(recibir(menu_3));
+
+variable resultado;
+
+metodo operaciones(){
+    si (operacion == "+"){
+        resultado = numero_1 + numero_2;
+    } si_no si (operacion == "-") {
+        resultado = numero_1 - numero_2;
+    } si_no si (operacion == "*") {
+        resultado = numero_1 * numero_2;
+    } si_no si (operacion == "/") {
+        resultado = numero_1 / numero_2;
+    } si_no {
+        regresa operacion + " No esta soportada, Intenta otra vez.";
+    }
+    regresa "El resultado de " + numero_1 +" "+ operacion +" " + numero_2 + " = " + resultado;
+}
+
+imprimir(operaciones());
