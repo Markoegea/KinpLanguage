@@ -1,2 +1,13 @@
-variable factorial = procedimiento(n){si (n == 1) {regresa 1;} regresa n * factorial(n-1); };
+/*
+La funcion se almacena dentro de la variable, 
+la cual se llama a si misma para hallar el factorial
+*/
+variable factorial = procedimiento(n)
+{
+    si (n == 1) 
+    {
+        regresa 1;
+    } 
+    regresa n * factorial(n-1); 
+};
 imprimir(factorial(7));

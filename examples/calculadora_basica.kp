@@ -1,4 +1,4 @@
-variable menu = "Vamos a potenciar, dame el primer numero: ";
+variable menu = "Vamos a calcular, dame el primer numero: ";
 variable menu_2 = "Que operacion quieres hacer: ";
 variable menu_3 = "Listo, dame el segundo numero: ";
 

@@ -1,5 +1,6 @@
 import sys
 from kp.repl import (loop_evaluator, file_evaluator)
+#Para usar los test "mypy . && nosetests"
 
 def main() -> None:
     print('Bienvenido al lenguaje de Programacion Kinp.')

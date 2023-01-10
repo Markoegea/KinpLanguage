@@ -3,7 +3,9 @@ variable menu = " Bienvenido al conversos de monedas, que deseas?
 de pesos a dolares [2]?: ";
 
 metodo conversor(eleccion){
-    variable valor_dolar = 4438.51; 
+    /*Aqui va el valor del dolar actualizado*/
+    variable valor_dolar = 4850.54; 
+
     variable moneda_a_convertir;
     variable moneda;
 
