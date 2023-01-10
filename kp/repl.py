@@ -1,4 +1,3 @@
-import readline
 from typing import List
 
 from kp.ast import Program
@@ -15,10 +14,12 @@ EOF_TOKEN: Token = Token(TokenType.EOF,'')
 
 _FILENOTFOUND = 'Poseemos un problema, no se encontro el archivo {}'
 
+#Imprimir los errores en pantalla.
 def _print_parse_errors(errors: List[str]):
     for error in errors:
         print(error)
 
+#Iniciar todos los elementos necesarios apartir del input, y de esta manera correr el programa.
 def star_repl(source: str, scanned: List[str]) -> None:
     scanned.append(source)
     lexer: Lexer = Lexer(' '.join(scanned))
@@ -30,10 +31,11 @@ def star_repl(source: str, scanned: List[str]) -> None:
         return
 
     evaluated = evaluate(program,env)
-    #assert evaluated is not None
+    
     if type(evaluated) == Error:
         print(evaluated.inspect())
 
+#Cuando se use la consola poder ejecutar codigo hasta que se utilize salir().
 def loop_evaluator() -> None:
     #Si solo se quiere usar el evaluador sin archivo
     #TODO: si se dectecta un error, no incluir la linea en el scanned
@@ -41,7 +43,7 @@ def loop_evaluator() -> None:
     while (source := input('-> ')) != 'salir()':
         star_repl(source,scanned)
     
-
+#Con la ruta al archivo, tomar el cotenido del archivo y pasarlo por el lexer o sino, salta un error.
 def file_evaluator(path:str) -> None:
     src = None
     scanned: List[str] = []

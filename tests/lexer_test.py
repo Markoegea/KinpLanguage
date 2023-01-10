@@ -28,12 +28,12 @@ class LexerTest(TestCase):
         self.assertEquals(self._get_tokens(source,len(source)), expected_tokens)
     
     def test_one_character_operator(self) -> None:
-        source: str = '=+-/*<>!'
+        source: str = '/=+-*<>!'
         expected_tokens: List[Token] = [
+            Token(TokenType.DIVISION, '/'),
             Token(TokenType.ASSIGN, '='),
             Token(TokenType.PLUS, '+'),
             Token(TokenType.LESS, '-'),
-            Token(TokenType.DIVISION, '/'),
             Token(TokenType.MULTIPLICATION, '*'),
             Token(TokenType.LT, '<'),
             Token(TokenType.GT, '>'),
@@ -212,6 +212,7 @@ class LexerTest(TestCase):
             222 <= 212;
             33 >= 33;
             -90 >= -90;
+            /*        */
         '''
         expected_tokens: List[Token] = [
             Token(TokenType.INT, '10'),
@@ -245,8 +246,11 @@ class LexerTest(TestCase):
             Token(TokenType.LESS, '-'),
             Token(TokenType.INT, '90'),
             Token(TokenType.SEMICOLON, ';'),
+
+            Token(TokenType.SCMT, '/*'),  
+            Token(TokenType.ECMT, '*/'),  
         ]
-        self.assertEquals(self._get_tokens(source,26), expected_tokens)
+        self.assertEquals(self._get_tokens(source,28), expected_tokens)
 
     def test_two_character_operator_float(self) -> None:
         source: str = '''

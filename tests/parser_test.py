@@ -60,6 +60,7 @@ class ParserTest(TestCase):
             variable x = 5;
             variable y = 10;
             variable foo = 20;
+            /*variable pi = 3.14;*/
         '''
         lexer: Lexer = Lexer(source)
         parser: Parser = Parser(lexer)
@@ -156,6 +157,7 @@ class ParserTest(TestCase):
 
     def test_infix_expressions(self)-> None:
         source: str = '''
+        /*Number operations*/
         5 + 5;
         5 - 5;
         5 * 5;
@@ -166,6 +168,7 @@ class ParserTest(TestCase):
         5 <= 5;
         5 == 5;
         5 != 5;
+        /*Bool operations*/
         verdadero == verdadero;
         verdadero != falso;
         '''
@@ -352,7 +355,10 @@ class ParserTest(TestCase):
 
     def test_if_else_expression(self) -> None:
             source: str = '''
-            si (x == 5) { 
+            si (x == 5) {
+                /*
+                regresa verdadero
+                */ 
                 regresa verdadero; 
             } si_no {
                 z 

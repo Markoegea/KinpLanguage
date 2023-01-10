@@ -443,6 +443,13 @@ class Parser:
                 return self._parse_let_statement()
             elif self._current_token.token_type == TokenType.RETURN:
                 return self._parse_return_statement()
+            elif self._current_token.token_type == TokenType.SCMT:
+                while self._current_token.token_type != TokenType.ECMT:
+                    self._advance_tokens()
+                    if self._current_token.token_type == TokenType.EOF:
+                        message = f'No cerro el bloque de comentarios.'
+                        self._errors.append(message)
+                return None
             else:
                 return self._parse_expression_statements()
     

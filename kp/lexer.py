@@ -41,7 +41,10 @@ class Lexer:
             token = Token(TokenType.LESS, self._character)
 
         elif match(r'^\/$', self._character):
-            token = Token(TokenType.DIVISION, self._character)
+            if self._peek_character() == '*':
+                token = self._make_two_character_token(TokenType.SCMT)
+            else:
+                token = Token(TokenType.DIVISION, self._character)
 
         elif match(r'^\+$', self._character):
             token = Token(TokenType.PLUS, self._character)
@@ -52,6 +55,8 @@ class Lexer:
         elif match(r'^\*$', self._character):
             if self._peek_character() == '*':
                 token = self._make_two_character_token(TokenType.RTP)
+            elif self._peek_character() == '/':
+                token = self._make_two_character_token(TokenType.ECMT)
             else:
                 token = Token(TokenType.MULTIPLICATION, self._character)
 
@@ -105,7 +110,6 @@ class Lexer:
 
         elif match(r'^"$', self._character):
             literal = self._read_string()
-
             return Token(TokenType.STRING, literal)
 
         else:

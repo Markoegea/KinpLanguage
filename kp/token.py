@@ -7,6 +7,7 @@ class TokenType(Enum):
     ASSIGN = auto(),
     COMMA = auto(),
     DIVISION = auto(),
+    ECMT = auto(),
     ELSE = auto(),
     EOF = auto(),
     EQ = auto(),
@@ -35,6 +36,7 @@ class TokenType(Enum):
     RETURN = auto(),
     RTP = auto(),
     RPAREN = auto(),
+    SCMT = auto(),
     SEMICOLON = auto(),
     STRING = auto()
     TRUE = auto(),
