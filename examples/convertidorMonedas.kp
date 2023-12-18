@@ -4,7 +4,7 @@ de pesos a dolares [2]?: ";
 
 metodo conversor(eleccion){
     /*Aqui va el valor del dolar actualizado*/
-    variable valor_dolar = 4850.54; 
+    variable valor_dolar = 3934.5; 
 
     variable moneda_a_convertir;
     variable moneda;

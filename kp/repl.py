@@ -1,4 +1,3 @@
-import readline
 from typing import List
 
 from kp.ast import Program
@@ -42,7 +41,7 @@ def loop_evaluator() -> None:
     #TODO: si se dectecta un error, no incluir la linea en el scanned
     scanned: List[str] = []
     while (source := input('-> ')) != 'salir()':
-        star_repl(source,scanned)
+        star_repl(source, scanned)
     
 #Con la ruta al archivo, tomar el cotenido del archivo y pasarlo por el lexer o sino, salta un error
 def file_evaluator(path:str) -> None:

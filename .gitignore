@@ -1,6 +1,24 @@
-*.pyc
-*.swp
-
-.mypy_cache/
+# Byte-compiled / optimized files
 __pycache__/
-venv/
+*.py[cod]
+
+# Virtual environment
+.venv/
+.env/
+flagged/
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs and data files
+*.log
+*.csv
+*.xlsx
+
+# Compiled Python files
+*.pyc
+
+# OS generated files
+.DS_Store
+Thumbs.db
