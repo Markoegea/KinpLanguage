@@ -1,6 +1,6 @@
 # Kinp Language
 
-This project aims to create a new programming lenguage open source, with a syntaxis in spanish.
+This project aims to create a new programming language open source, with a syntax in spanish.
 
 ## Table of Contents
 
