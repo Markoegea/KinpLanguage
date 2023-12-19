@@ -21,7 +21,7 @@ This project aims to create a new programming language open source, with a synta
 
 ## Description
 
-This project is a programming lenguage open source, based in Python with inspiration in JavaScript and C#.
+This project is a programming language open source, based in Python with inspiration in JavaScript and C#.
 
 Use Python to read the given text letter by letter, to transform them in tokens that are parsed to generate an abstact syntax tree, next is evaluated node by node, to give the desirable output.
 
